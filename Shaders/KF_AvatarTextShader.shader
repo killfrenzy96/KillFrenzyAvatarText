@@ -1,16 +1,31 @@
-﻿// VRChat Avatar Text Shader by KillFrenzy
+﻿// Avatar Text for VRChat
+// Copyright (C) 2022 KillFrenzy / Evan Tran
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 
 Shader "Unlit/KF_VRChatAvatarTextShader"
 {
-    Properties
-    {
+	Properties
+	{
 		[Enum(Off,0,Front,1,Back,2)] _Culling ("Culling Mode", Int) = 2
-        _MainTex("Texture", 2D) = "white" {}
+		_MainTex("Texture", 2D) = "white" {}
 		_TileX("Text Tile Count X", Float) = 16
 		_TileY("Text Tile Count Y", Float) = 6
 		_RowLength("Text Output Row Length", Float) = 32
 		_RowColumns("Text Output Row Columns", Float) = 12
-		
+
 		_Char0("Character 0", Float) = 0
 		_Char1("Character 1", Float) = 0
 		_Char2("Character 2", Float) = 0
@@ -75,34 +90,97 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		_Char61("Character 61", Float) = 0
 		_Char62("Character 62", Float) = 0
 		_Char63("Character 63", Float) = 0
-    }
-	
-    SubShader
-    {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
-        LOD 100
-		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha
+		_Char64("Character 64", Float) = 0
+		_Char65("Character 65", Float) = 0
+		_Char66("Character 66", Float) = 0
+		_Char67("Character 67", Float) = 0
+		_Char68("Character 68", Float) = 0
+		_Char69("Character 69", Float) = 0
+		_Char70("Character 70", Float) = 0
+		_Char71("Character 71", Float) = 0
+		_Char72("Character 72", Float) = 0
+		_Char73("Character 73", Float) = 0
+		_Char74("Character 74", Float) = 0
+		_Char75("Character 75", Float) = 0
+		_Char76("Character 76", Float) = 0
+		_Char77("Character 77", Float) = 0
+		_Char78("Character 78", Float) = 0
+		_Char79("Character 79", Float) = 0
+		_Char80("Character 80", Float) = 0
+		_Char81("Character 81", Float) = 0
+		_Char82("Character 82", Float) = 0
+		_Char83("Character 83", Float) = 0
+		_Char84("Character 84", Float) = 0
+		_Char85("Character 85", Float) = 0
+		_Char86("Character 86", Float) = 0
+		_Char87("Character 87", Float) = 0
+		_Char88("Character 88", Float) = 0
+		_Char89("Character 89", Float) = 0
+		_Char90("Character 90", Float) = 0
+		_Char91("Character 91", Float) = 0
+		_Char92("Character 92", Float) = 0
+		_Char93("Character 93", Float) = 0
+		_Char94("Character 94", Float) = 0
+		_Char95("Character 95", Float) = 0
+		_Char96("Character 96", Float) = 0
+		_Char97("Character 97", Float) = 0
+		_Char98("Character 98", Float) = 0
+		_Char99("Character 99", Float) = 0
+		_Char100("Character 100", Float) = 0
+		_Char101("Character 101", Float) = 0
+		_Char102("Character 102", Float) = 0
+		_Char103("Character 103", Float) = 0
+		_Char104("Character 104", Float) = 0
+		_Char105("Character 105", Float) = 0
+		_Char106("Character 106", Float) = 0
+		_Char107("Character 107", Float) = 0
+		_Char108("Character 108", Float) = 0
+		_Char109("Character 109", Float) = 0
+		_Char110("Character 110", Float) = 0
+		_Char111("Character 111", Float) = 0
+		_Char112("Character 112", Float) = 0
+		_Char113("Character 113", Float) = 0
+		_Char114("Character 114", Float) = 0
+		_Char115("Character 115", Float) = 0
+		_Char116("Character 116", Float) = 0
+		_Char117("Character 117", Float) = 0
+		_Char118("Character 118", Float) = 0
+		_Char119("Character 119", Float) = 0
+		_Char120("Character 120", Float) = 0
+		_Char121("Character 121", Float) = 0
+		_Char122("Character 122", Float) = 0
+		_Char123("Character 123", Float) = 0
+		_Char124("Character 124", Float) = 0
+		_Char125("Character 125", Float) = 0
+		_Char126("Character 126", Float) = 0
+		_Char127("Character 127", Float) = 0
+	}
+
+	SubShader
+	{
+		Tags { "RenderType"="Opaque" }
+		LOD 100
+		// Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
 
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
 
-            #include "UnityCG.cginc"
+			#include "UnityCG.cginc"
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-			
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+
 			float _TileX;
 			float _TileY;
 			float _RowLength;
 			float _RowColumns;
-			
+
 			// Please send me support for arrays using shader properties
 			float _Char0;
 			float _Char1;
@@ -168,37 +246,101 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			float _Char61;
 			float _Char62;
 			float _Char63;
-			
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
-            };
+			float _Char64;
+			float _Char65;
+			float _Char66;
+			float _Char67;
+			float _Char68;
+			float _Char69;
+			float _Char70;
+			float _Char71;
+			float _Char72;
+			float _Char73;
+			float _Char74;
+			float _Char75;
+			float _Char76;
+			float _Char77;
+			float _Char78;
+			float _Char79;
+			float _Char80;
+			float _Char81;
+			float _Char82;
+			float _Char83;
+			float _Char84;
+			float _Char85;
+			float _Char86;
+			float _Char87;
+			float _Char88;
+			float _Char89;
+			float _Char90;
+			float _Char91;
+			float _Char92;
+			float _Char93;
+			float _Char94;
+			float _Char95;
+			float _Char96;
+			float _Char97;
+			float _Char98;
+			float _Char99;
+			float _Char100;
+			float _Char101;
+			float _Char102;
+			float _Char103;
+			float _Char104;
+			float _Char105;
+			float _Char106;
+			float _Char107;
+			float _Char108;
+			float _Char109;
+			float _Char110;
+			float _Char111;
+			float _Char112;
+			float _Char113;
+			float _Char114;
+			float _Char115;
+			float _Char116;
+			float _Char117;
+			float _Char118;
+			float _Char119;
+			float _Char120;
+			float _Char121;
+			float _Char122;
+			float _Char123;
+			float _Char124;
+			float _Char125;
+			float _Char126;
+			float _Char127;
 
-            struct v2f
-            {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
-            };
-			
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
-                return o;
-            }
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float2 uv : TEXCOORD0;
+			};
 
-            fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
-            {
+			struct v2f
+			{
+				float2 uv : TEXCOORD0;
+				UNITY_FOG_COORDS(1)
+				float4 vertex : SV_POSITION;
+			};
+
+			v2f vert (appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+				UNITY_TRANSFER_FOG(o,o.vertex);
+				return o;
+			}
+
+			fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
+			{
 				if (!facing) {
 					i.uv.x = 1.0 - i.uv.x;
 				}
-				
+
 				// Really, I'd like to have arrays using shader properties
-				float chars[64];
+				float chars[128];
 				chars[0] = _Char0;
 				chars[1] = _Char1;
 				chars[2] = _Char2;
@@ -263,29 +405,93 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				chars[61] = _Char61;
 				chars[62] = _Char62;
 				chars[63] = _Char63;
-				
+				chars[64] = _Char64;
+				chars[65] = _Char65;
+				chars[66] = _Char66;
+				chars[67] = _Char67;
+				chars[68] = _Char68;
+				chars[69] = _Char69;
+				chars[70] = _Char70;
+				chars[71] = _Char71;
+				chars[72] = _Char72;
+				chars[73] = _Char73;
+				chars[74] = _Char74;
+				chars[75] = _Char75;
+				chars[76] = _Char76;
+				chars[77] = _Char77;
+				chars[78] = _Char78;
+				chars[79] = _Char79;
+				chars[80] = _Char80;
+				chars[81] = _Char81;
+				chars[82] = _Char82;
+				chars[83] = _Char83;
+				chars[84] = _Char84;
+				chars[85] = _Char85;
+				chars[86] = _Char86;
+				chars[87] = _Char87;
+				chars[88] = _Char88;
+				chars[89] = _Char89;
+				chars[90] = _Char90;
+				chars[91] = _Char91;
+				chars[92] = _Char92;
+				chars[93] = _Char93;
+				chars[94] = _Char94;
+				chars[95] = _Char95;
+				chars[96] = _Char96;
+				chars[97] = _Char97;
+				chars[98] = _Char98;
+				chars[99] = _Char99;
+				chars[100] = _Char100;
+				chars[101] = _Char101;
+				chars[102] = _Char102;
+				chars[103] = _Char103;
+				chars[104] = _Char104;
+				chars[105] = _Char105;
+				chars[106] = _Char106;
+				chars[107] = _Char107;
+				chars[108] = _Char108;
+				chars[109] = _Char109;
+				chars[110] = _Char110;
+				chars[111] = _Char111;
+				chars[112] = _Char112;
+				chars[113] = _Char113;
+				chars[114] = _Char114;
+				chars[115] = _Char115;
+				chars[116] = _Char116;
+				chars[117] = _Char117;
+				chars[118] = _Char118;
+				chars[119] = _Char119;
+				chars[120] = _Char120;
+				chars[121] = _Char121;
+				chars[122] = _Char122;
+				chars[123] = _Char123;
+				chars[124] = _Char124;
+				chars[125] = _Char125;
+				chars[126] = _Char126;
+				chars[127] = _Char127;
+
 				float2 uvSize = float2(_TileX, _TileY);
 				float2 charSize = float2(_RowLength, _RowColumns);
 				float2 uvTile = 1.0 / uvSize;
 				float2 charTile = 1.0 / charSize;
-				
+
 				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
 				float charCurrent = round(chars[max(min(charPosition, 63), 0)]);
-				
+
 				charCurrent = max(min(charCurrent, uvSize.x * uvSize.y), 0.0);
-				
+
 				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
 				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 - ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
 				float2 uv = uvPosition + uvOffset;
-				
-                fixed4 col = tex2D(_MainTex, uv);
-				clip(col.a - 0.01);
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
-            }
-			
-            ENDCG
-        }
-    }
+
+				fixed4 col = tex2D(_MainTex, uv);
+				clip(col.a - 0.1);
+				UNITY_APPLY_FOG(i.fogCoord, col);
+				return col;
+			}
+
+			ENDCG
+		}
+	}
 	FallBack "Unlit/Transparent"
 }

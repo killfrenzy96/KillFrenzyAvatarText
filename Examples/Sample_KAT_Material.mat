@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SampleTextMaterial
+  m_Name: Sample_KAT_Material
   m_Shader: {fileID: 4800000, guid: 30a005c1870387fd5b12700d8d599194, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -69,8 +69,36 @@ Material:
     - _Char09: 0
     - _Char1: 73
     - _Char10: 0
+    - _Char100: 0
+    - _Char101: 0
+    - _Char102: 0
+    - _Char103: 0
+    - _Char104: 0
+    - _Char105: 0
+    - _Char106: 0
+    - _Char107: 0
+    - _Char108: 0
+    - _Char109: 0
     - _Char11: 33
+    - _Char110: 0
+    - _Char111: 0
+    - _Char112: 0
+    - _Char113: 0
+    - _Char114: 0
+    - _Char115: 0
+    - _Char116: 0
+    - _Char117: 0
+    - _Char118: 0
+    - _Char119: 0
     - _Char12: 86
+    - _Char120: 0
+    - _Char121: 0
+    - _Char122: 0
+    - _Char123: 0
+    - _Char124: 0
+    - _Char125: 0
+    - _Char126: 0
+    - _Char127: 0
     - _Char13: 65
     - _Char14: 84
     - _Char15: 65
@@ -128,9 +156,44 @@ Material:
     - _Char62: 0
     - _Char63: 0
     - _Char64: 0
+    - _Char65: 0
+    - _Char66: 0
+    - _Char67: 0
+    - _Char68: 0
+    - _Char69: 0
     - _Char7: 78
+    - _Char70: 0
+    - _Char71: 0
+    - _Char72: 0
+    - _Char73: 0
+    - _Char74: 0
+    - _Char75: 0
+    - _Char76: 0
+    - _Char77: 0
+    - _Char78: 0
+    - _Char79: 0
     - _Char8: 90
+    - _Char80: 0
+    - _Char81: 0
+    - _Char82: 0
+    - _Char83: 0
+    - _Char84: 0
+    - _Char85: 0
+    - _Char86: 0
+    - _Char87: 0
+    - _Char88: 0
+    - _Char89: 0
     - _Char9: 89
+    - _Char90: 0
+    - _Char91: 0
+    - _Char92: 0
+    - _Char93: 0
+    - _Char94: 0
+    - _Char95: 0
+    - _Char96: 0
+    - _Char97: 0
+    - _Char98: 0
+    - _Char99: 0
     - _Culling: 0
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -144,7 +207,7 @@ Material:
     - _OutputX: 16
     - _OutputY: 6
     - _Parallax: 0.02
-    - _RowColumns: 2
+    - _RowColumns: 4
     - _RowLegth: 32
     - _RowLength: 32
     - _SmoothnessTextureChannel: 0
