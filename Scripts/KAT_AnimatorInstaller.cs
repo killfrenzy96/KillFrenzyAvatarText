@@ -150,11 +150,11 @@ namespace KillFrenzy.AvatarTextTools
 
 			// Add Layers
 			for (int i = 0; i < CharacterSyncParamsSize; i++) {
-				controller.AddLayer(CreateLogicLayer(i));
+				controller.AddLayer(CreateLogicLayer(controller, i));
 			}
 
 			for (int i = 0; i < CharacterLimit; i++) {
-				controller.AddLayer(CreateCharLayer(i, charAnimations[i]));
+				controller.AddLayer(CreateCharLayer(controller, i, charAnimations[i]));
 			}
 
 			return true;
@@ -210,7 +210,7 @@ namespace KillFrenzy.AvatarTextTools
 			return orderedAnimationClips;
 		}
 
-		private AnimatorControllerLayer CreateLogicLayer(int logicId)
+		private AnimatorControllerLayer CreateLogicLayer(AnimatorController controller, int logicId)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 			AnimatorStateMachine stateMachine;
@@ -218,9 +218,8 @@ namespace KillFrenzy.AvatarTextTools
 			layer.name = ParamTextLogicPrefix + logicId.ToString();
 			layer.defaultWeight = 0;
 			layer.stateMachine = stateMachine = new AnimatorStateMachine();
-
-			// StateMachineBehaviour behaviour = state.AddStateMachineBehaviour(typeof(AnimationClip));
-			// VRCAvatarParameterDriver vrcParameterDriver = new VRCAvatarParameterDriver();
+			layer.stateMachine.name = layer.name;
+			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
 
 			// Default state
 			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(0f, 200f, 0f));
@@ -299,13 +298,15 @@ namespace KillFrenzy.AvatarTextTools
 			return layer;
 		}
 
-		private AnimatorControllerLayer CreateCharLayer(int charId, AnimationClip animation)
+		private AnimatorControllerLayer CreateCharLayer(AnimatorController controller, int charId, AnimationClip animation)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 
 			layer.name = ParamCharPrefix + charId.ToString();
-			layer.defaultWeight = 1;
+			layer.defaultWeight = 1f;
 			layer.stateMachine = new AnimatorStateMachine();
+			layer.stateMachine.name = layer.name;
+			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
 
 			AnimatorState state = layer.stateMachine.AddState(ParamCharPrefix + charId.ToString(), new Vector3(300f, 100f, 0f));
 			state.motion = animation;
