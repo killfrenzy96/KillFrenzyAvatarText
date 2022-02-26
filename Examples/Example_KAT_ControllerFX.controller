@@ -5912,7 +5912,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Sample_KAT_ControllerFX
+  m_Name: Example_KAT_ControllerFX
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: KAT_Visible

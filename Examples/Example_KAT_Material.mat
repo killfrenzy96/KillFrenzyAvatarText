@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Sample_KAT_Material
+  m_Name: Example_KAT_Material
   m_Shader: {fileID: 4800000, guid: 30a005c1870387fd5b12700d8d599194, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -57,7 +57,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _Char0: 43
+    - _Char0: 0
     - _Char01: 0
     - _Char02: 0
     - _Char03: 0
@@ -67,7 +67,7 @@ Material:
     - _Char07: 0
     - _Char08: 0
     - _Char09: 0
-    - _Char1: 73
+    - _Char1: 0
     - _Char10: 0
     - _Char100: 0
     - _Char101: 0
@@ -79,7 +79,7 @@ Material:
     - _Char107: 0
     - _Char108: 0
     - _Char109: 0
-    - _Char11: 33
+    - _Char11: 0
     - _Char110: 0
     - _Char111: 0
     - _Char112: 0
@@ -90,7 +90,7 @@ Material:
     - _Char117: 0
     - _Char118: 0
     - _Char119: 0
-    - _Char12: 86
+    - _Char12: 0
     - _Char120: 0
     - _Char121: 0
     - _Char122: 0
@@ -99,25 +99,25 @@ Material:
     - _Char125: 0
     - _Char126: 0
     - _Char127: 0
-    - _Char13: 65
-    - _Char14: 84
-    - _Char15: 65
-    - _Char16: 82
+    - _Char13: 0
+    - _Char14: 0
+    - _Char15: 0
+    - _Char16: 0
     - _Char17: 0
-    - _Char18: 52
-    - _Char19: 69
-    - _Char2: 76
-    - _Char20: 88
-    - _Char21: 84
+    - _Char18: 0
+    - _Char19: 0
+    - _Char2: 0
+    - _Char20: 0
+    - _Char21: 0
     - _Char22: 0
-    - _Char23: 51
-    - _Char24: 72
-    - _Char25: 65
-    - _Char26: 68
-    - _Char27: 69
-    - _Char28: 82
-    - _Char29: 1
-    - _Char3: 76
+    - _Char23: 0
+    - _Char24: 0
+    - _Char25: 0
+    - _Char26: 0
+    - _Char27: 0
+    - _Char28: 0
+    - _Char29: 0
+    - _Char3: 0
     - _Char30: 0
     - _Char31: 0
     - _Char32: 0
@@ -128,7 +128,7 @@ Material:
     - _Char37: 0
     - _Char38: 0
     - _Char39: 0
-    - _Char4: 38
+    - _Char4: 0
     - _Char40: 0
     - _Char41: 0
     - _Char42: 0
@@ -139,7 +139,7 @@ Material:
     - _Char47: 0
     - _Char48: 0
     - _Char49: 0
-    - _Char5: 82
+    - _Char5: 0
     - _Char50: 0
     - _Char51: 0
     - _Char52: 0
@@ -150,7 +150,7 @@ Material:
     - _Char57: 0
     - _Char58: 0
     - _Char59: 0
-    - _Char6: 69
+    - _Char6: 0
     - _Char60: 0
     - _Char61: 0
     - _Char62: 0
@@ -161,7 +161,7 @@ Material:
     - _Char67: 0
     - _Char68: 0
     - _Char69: 0
-    - _Char7: 78
+    - _Char7: 0
     - _Char70: 0
     - _Char71: 0
     - _Char72: 0
@@ -172,7 +172,7 @@ Material:
     - _Char77: 0
     - _Char78: 0
     - _Char79: 0
-    - _Char8: 90
+    - _Char8: 0
     - _Char80: 0
     - _Char81: 0
     - _Char82: 0
@@ -183,7 +183,7 @@ Material:
     - _Char87: 0
     - _Char88: 0
     - _Char89: 0
-    - _Char9: 89
+    - _Char9: 0
     - _Char90: 0
     - _Char91: 0
     - _Char92: 0
