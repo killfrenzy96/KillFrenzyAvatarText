@@ -16,6 +16,8 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if UNITY_EDITOR
+
 namespace KillFrenzy.AvatarTextTools.Settings
 {
 	public static class KatSettings
@@ -24,13 +26,13 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const string ParamTextVisible = "KAT_Visible";
 		public const string ParamTextPointer = "KAT_Pointer";
 		public const string ParamTextSyncPrefix = "KAT_CharSync";
-		public const string ParamCharPrefix = "KAT_Char";
 
 		public const string CharacterAnimationFolder = "KAT_CharAnimations/";
 		public const string CharacterAnimationClipNamePrefix = "Char";
-		public const int CharacterLimit = 128;
-		public const int CharacterCount = 96;
-		public const int CharacterSyncParamsSize = 4;
-		public const int PointerCount = CharacterLimit / CharacterSyncParamsSize;
+		public const int TextLength = 128;
+		public const int SyncParamsSize = 4;
+		public const int PointerCount = TextLength / SyncParamsSize;
 	}
 }
+
+#endif

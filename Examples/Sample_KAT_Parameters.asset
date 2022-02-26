@@ -21,23 +21,23 @@ MonoBehaviour:
     valueType: 2
     saved: 0
     defaultValue: 0
-  - name: ParamTextPointer
+  - name: KAT_Pointer
     valueType: 0
+    saved: 0
+    defaultValue: 0
+  - name: KAT_CharSync0
+    valueType: 1
     saved: 0
     defaultValue: 0
   - name: KAT_CharSync1
-    valueType: 0
+    valueType: 1
     saved: 0
     defaultValue: 0
   - name: KAT_CharSync2
-    valueType: 0
+    valueType: 1
     saved: 0
     defaultValue: 0
   - name: KAT_CharSync3
-    valueType: 0
-    saved: 0
-    defaultValue: 0
-  - name: KAT_CharSync4
-    valueType: 0
+    valueType: 1
     saved: 0
     defaultValue: 0

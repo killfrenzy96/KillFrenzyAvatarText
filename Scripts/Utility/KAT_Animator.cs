@@ -16,18 +16,14 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if UNITY_EDITOR
+
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
-// using System.Collections;
-// using System.Collections.Generic;
 
 using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
-using Parameter = VRC.SDKBase.VRC_AvatarParameterDriver.Parameter;
-
-using VRC.SDK3.Avatars.Components;
-// using static VRC.SDKBase.VRC_AvatarParameterDriver;
 
 using KillFrenzy.AvatarTextTools.Settings;
 
@@ -35,7 +31,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatAnimatorInstaller
 	{
-		public static bool InstallToAnimator(AnimatorController controller)
+		public static bool InstallToAnimator(AnimatorController controller, bool writeDefaults = false)
 		{
 			AnimationClip[] charAnimations = GetCharAnimations();
 			if (charAnimations == null) {
@@ -47,21 +43,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			controller.AddParameter(KatSettings.ParamTextVisible, AnimatorControllerParameterType.Bool);
 			controller.AddParameter(KatSettings.ParamTextPointer, AnimatorControllerParameterType.Int);
 
-			for (int i = 0; i < KatSettings.CharacterSyncParamsSize; i++) {
-				controller.AddParameter(KatSettings.ParamTextSyncPrefix + i.ToString(), AnimatorControllerParameterType.Int);
-			}
-
-			for (int i = 0; i < KatSettings.CharacterLimit; i++) {
-				controller.AddParameter(KatSettings.ParamCharPrefix + i.ToString(), AnimatorControllerParameterType.Float);
+			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
+				controller.AddParameter(KatSettings.ParamTextSyncPrefix + i.ToString(), AnimatorControllerParameterType.Float);
 			}
 
 			// Add Layers
-			for (int i = 0; i < KatSettings.CharacterSyncParamsSize; i++) {
-				controller.AddLayer(CreateLogicLayer(controller, i));
-			}
-
-			for (int i = 0; i < KatSettings.CharacterLimit; i++) {
-				controller.AddLayer(CreateCharLayer(controller, i, charAnimations[i]));
+			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
+				controller.AddLayer(CreateLogicLayer(controller, i, charAnimations));
 			}
 
 			return true;
@@ -72,7 +60,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			for (int i = controller.layers.Length - 1; i >= 0; i--) {
 				AnimatorControllerLayer layer = controller.layers[i];
 				if (
-					layer.name.StartsWith(KatSettings.ParamCharPrefix) ||
+					// layer.name.StartsWith(KatSettings.ParamCharPrefix) ||
 					layer.name.StartsWith(KatSettings.ParamTextLogicPrefix)
 				) {
 					controller.RemoveLayer(i);
@@ -86,8 +74,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
 					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
 					parameter.name.StartsWith(KatSettings.ParamTextLogicPrefix) ||
-					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix) ||
-					parameter.name.StartsWith(KatSettings.ParamCharPrefix)
+					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
+					// parameter.name.StartsWith(KatSettings.ParamCharPrefix)
 				) {
 					controller.RemoveParameter(i);
 				}
@@ -96,12 +84,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return true;
 		}
 
-		public static AnimationClip[] GetCharAnimations() {
+		private static AnimationClip[] GetCharAnimations() {
 			AnimationClip[] animationClips = Resources.LoadAll<AnimationClip>(KatSettings.CharacterAnimationFolder);
-			AnimationClip[] orderedAnimationClips = new AnimationClip[KatSettings.CharacterLimit];
+			AnimationClip[] orderedAnimationClips = new AnimationClip[KatSettings.TextLength];
 
 			// Order the animation clips so they match their index
-			for (int i = 0; i < KatSettings.CharacterLimit; i++) {
+			for (int i = 0; i < KatSettings.TextLength; i++) {
 				orderedAnimationClips[i] = null;
 				foreach (var animationClip in animationClips) {
 					if (animationClip.name == KatSettings.CharacterAnimationClipNamePrefix + i.ToString()) {
@@ -117,13 +105,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return orderedAnimationClips;
 		}
 
-		public static AnimatorControllerLayer CreateLogicLayer(AnimatorController controller, int logicId)
+		private static AnimatorControllerLayer CreateLogicLayer(AnimatorController controller, int logicId, AnimationClip[] charAnimations)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 			AnimatorStateMachine stateMachine;
 
 			layer.name = KatSettings.ParamTextLogicPrefix + logicId.ToString();
-			layer.defaultWeight = 0;
+			layer.defaultWeight = 1f;
 			layer.stateMachine = stateMachine = new AnimatorStateMachine();
 			layer.stateMachine.name = layer.name;
 			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
@@ -131,10 +119,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			// Default state
 			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(0f, 200f, 0f));
 			stateDisabled.writeDefaultValues = false;
+			stateDisabled.speed = 0f;
 
 			// Standby state - waits for updates to the pointer
 			AnimatorState stateStandby = stateMachine.AddState("StandBy", new Vector3(0f, 500f, 0f));
 			stateStandby.writeDefaultValues = false;
+			stateStandby.speed = 0f;
 
 			AnimatorStateTransition enabledTransition = stateDisabled.AddExitTransition(false);
 			enabledTransition.destinationState = stateStandby;
@@ -145,83 +135,34 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			disabledTransition.AddCondition(AnimatorConditionMode.Equals, 0, KatSettings.ParamTextPointer);
 			disabledTransition.duration = 0;
 
-			// Create Character states
-			AnimatorState[] stateChars = new AnimatorState[KatSettings.CharacterCount];
-			for (int i = logicId; i < KatSettings.CharacterCount; i += KatSettings.CharacterSyncParamsSize) {
-				int charIndex = i;
-
-				AnimatorState stateChar = stateChars[charIndex] = stateMachine.AddState("Char" + charIndex.ToString(), new Vector3(1000f, 500f + 50f * charIndex, 0f));
-				stateChar.writeDefaultValues = false;
-
-				VRCAvatarParameterDriver parameterDriver = stateChar.AddStateMachineBehaviour<VRCAvatarParameterDriver>();
-				parameterDriver.parameters.Add(new Parameter() {
-					name = KatSettings.ParamCharPrefix + charIndex.ToString(),
-					value = (float)charIndex * 0.01f
-				});
-			}
-
-			// Create Pointer states
+			// Create pointer animations states
 			for (int i = 0; i < KatSettings.PointerCount; i++) {
 				int pointerIndex = i + 1;
+				int charIndex = KatSettings.SyncParamsSize * i + logicId;
 
-				float pointerPosOffsetY = 500f;
+				float pointerPosOffsetY = 500f + 50f * i;
 
-				AnimatorState statePointerStart = stateMachine.AddState("PointerStart" + pointerIndex.ToString(), new Vector3(500f, pointerPosOffsetY + 100f * i, 0f));
-				statePointerStart.writeDefaultValues = false;
+				AnimatorState statePointerChar = stateMachine.AddState("Pointer" + pointerIndex.ToString() + " Char" + charIndex, new Vector3(500f, pointerPosOffsetY, 0f));
+				statePointerChar.motion = charAnimations[charIndex];
+				statePointerChar.timeParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
+				statePointerChar.timeParameterActive = true;
+				statePointerChar.writeDefaultValues = false;
+				statePointerChar.speed = 0f;
 
 				AnimatorStateTransition pointerStartTransition = stateStandby.AddExitTransition(false);
-				pointerStartTransition.destinationState = statePointerStart;
+				pointerStartTransition.destinationState = statePointerChar;
 				pointerStartTransition.AddCondition(AnimatorConditionMode.Equals, pointerIndex, KatSettings.ParamTextPointer);
 				pointerStartTransition.duration = 0;
 
-				AnimatorStateTransition pointerReturnTransition = statePointerStart.AddExitTransition(false);
+				AnimatorStateTransition pointerReturnTransition = statePointerChar.AddExitTransition(false);
 				pointerReturnTransition.destinationState = stateStandby;
 				pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, pointerIndex, KatSettings.ParamTextPointer);
 				pointerReturnTransition.duration = 0;
-
-				for (int j = logicId; j < KatSettings.CharacterCount; j += KatSettings.CharacterSyncParamsSize) {
-					int charIndex = j;
-					AnimatorState stateChar = stateChars[charIndex];
-
-					AnimatorStateTransition charEntryTransition1 = statePointerStart.AddExitTransition(false);
-					charEntryTransition1.destinationState = stateChar;
-					charEntryTransition1.AddCondition(AnimatorConditionMode.Equals, charIndex, KatSettings.ParamTextSyncPrefix + logicId.ToString());
-					charEntryTransition1.AddCondition(AnimatorConditionMode.Less, (float)charIndex * 0.01f - 0.005f, KatSettings.ParamCharPrefix + charIndex.ToString());
-					charEntryTransition1.duration = 0;
-
-					AnimatorStateTransition charEntryTransition2 = statePointerStart.AddExitTransition(false);
-					charEntryTransition2.destinationState = stateChar;
-					charEntryTransition2.AddCondition(AnimatorConditionMode.Equals, charIndex, KatSettings.ParamTextSyncPrefix + logicId.ToString());
-					charEntryTransition2.AddCondition(AnimatorConditionMode.Greater, (float)charIndex * 0.01f + 0.005f, KatSettings.ParamCharPrefix + charIndex.ToString());
-					charEntryTransition2.duration = 0;
-
-					AnimatorStateTransition charExitTransition = stateChar.AddExitTransition(false);
-					charExitTransition.destinationState = statePointerStart;
-					charExitTransition.AddCondition(AnimatorConditionMode.Equals, pointerIndex, KatSettings.ParamTextPointer);
-					charExitTransition.duration = 0;
-				}
 			}
-
-			return layer;
-		}
-
-		public static AnimatorControllerLayer CreateCharLayer(AnimatorController controller, int charId, AnimationClip animation)
-		{
-			AnimatorControllerLayer layer = new AnimatorControllerLayer();
-
-			layer.name = KatSettings.ParamCharPrefix + charId.ToString();
-			layer.defaultWeight = 1f;
-			layer.stateMachine = new AnimatorStateMachine();
-			layer.stateMachine.name = layer.name;
-			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
-
-			AnimatorState state = layer.stateMachine.AddState(KatSettings.ParamCharPrefix + charId.ToString(), new Vector3(300f, 100f, 0f));
-			state.motion = animation;
-			state.timeParameter = KatSettings.ParamCharPrefix + charId.ToString();
-			state.timeParameterActive = true;
-			state.writeDefaultValues = false;
 
 			return layer;
 		}
 	}
 }
+
+#endif

@@ -16,6 +16,8 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#if UNITY_EDITOR
+
 namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatParameterInstaller
@@ -23,3 +25,5 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 	}
 }
+
+#endif

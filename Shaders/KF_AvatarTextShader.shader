@@ -476,7 +476,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float2 charTile = 1.0 / charSize;
 
 				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
-				float charCurrent = round(chars[max(min(charPosition, 63), 0)]);
+				float charCurrent = round(chars[max(min(charPosition, 127), 0)]);
 
 				charCurrent = max(min(charCurrent, uvSize.x * uvSize.y), 0.0);
 
