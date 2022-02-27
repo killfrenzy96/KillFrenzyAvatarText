@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Debug_KAT_Menu
   m_EditorClassIdentifier: 
   controls:
-  - name: KAT Toggle
+  - name: KAT Visible
     icon: {fileID: 0}
     type: 102
     parameter:
@@ -87,12 +87,12 @@ MonoBehaviour:
     subMenu: {fileID: 0}
     subParameters: []
     labels: []
-  - name: KAT Pointer 3
+  - name: KAT Clear Text
     icon: {fileID: 0}
     type: 102
     parameter:
       name: KAT_Pointer
-    value: 3
+    value: 255
     style: 0
     subMenu: {fileID: 0}
     subParameters: []

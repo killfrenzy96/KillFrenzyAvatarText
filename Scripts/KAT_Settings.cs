@@ -22,7 +22,6 @@ namespace KillFrenzy.AvatarTextTools.Settings
 {
 	public static class KatSettings
 	{
-		public const string ParamTextLogicPrefix = "KAT_Logic";
 		public const string ParamTextVisible = "KAT_Visible";
 		public const string ParamTextPointer = "KAT_Pointer";
 		public const string ParamTextSyncPrefix = "KAT_CharSync";

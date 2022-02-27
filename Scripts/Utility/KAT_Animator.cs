@@ -33,8 +33,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 	{
 		public static bool InstallToAnimator(AnimatorController controller, bool writeDefaults = false)
 		{
-			AnimationClip[] charAnimations = GetCharAnimations();
-			if (charAnimations == null) {
+			AnimationClip[] animationChars = GetCharAnimations();
+			AnimationClip animationDisable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Disable");
+			AnimationClip animationEnable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Enable");
+			if (animationChars == null || animationDisable == null || animationEnable == null) {
 				Debug.Log("Failed: Resources/" + KatSettings.CharacterAnimationFolder + " is missing some animations.");
 				return false;
 			}
@@ -48,8 +50,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			// Add Layers
+			controller.AddLayer(CreateToggleLayer(controller, animationDisable, animationEnable));
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
-				controller.AddLayer(CreateLogicLayer(controller, i, charAnimations));
+				controller.AddLayer(CreateSyncLayer(controller, i, animationChars));
 			}
 
 			return true;
@@ -60,8 +63,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			for (int i = controller.layers.Length - 1; i >= 0; i--) {
 				AnimatorControllerLayer layer = controller.layers[i];
 				if (
-					// layer.name.StartsWith(KatSettings.ParamCharPrefix) ||
-					layer.name.StartsWith(KatSettings.ParamTextLogicPrefix)
+					layer.name.StartsWith(KatSettings.ParamTextVisible) ||
+					layer.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {
 					controller.RemoveLayer(i);
 				}
@@ -73,9 +76,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				if (
 					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
 					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
-					parameter.name.StartsWith(KatSettings.ParamTextLogicPrefix) ||
 					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
-					// parameter.name.StartsWith(KatSettings.ParamCharPrefix)
 				) {
 					controller.RemoveParameter(i);
 				}
@@ -86,7 +87,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 		private static AnimationClip[] GetCharAnimations() {
 			AnimationClip[] animationClips = Resources.LoadAll<AnimationClip>(KatSettings.CharacterAnimationFolder);
-			AnimationClip[] orderedAnimationClips = new AnimationClip[KatSettings.TextLength];
+			AnimationClip[] orderedAnimationClips = new AnimationClip[KatSettings.TextLength + 1];
 
 			// Order the animation clips so they match their index
 			for (int i = 0; i < KatSettings.TextLength; i++) {
@@ -102,27 +103,75 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				}
 			}
 
+			// Add the clear animation clip to the end
+			orderedAnimationClips[KatSettings.TextLength] = null;
+			foreach (var animationClip in animationClips) {
+				if (animationClip.name == KatSettings.CharacterAnimationClipNamePrefix + "Clear") {
+					orderedAnimationClips[KatSettings.TextLength] = animationClip;
+					break;
+				}
+			}
+			if (orderedAnimationClips[KatSettings.TextLength] == null) {
+				return null;
+			}
+
 			return orderedAnimationClips;
 		}
 
-		private static AnimatorControllerLayer CreateLogicLayer(AnimatorController controller, int logicId, AnimationClip[] charAnimations)
+		private static AnimatorControllerLayer CreateToggleLayer(AnimatorController controller, AnimationClip animationDisable, AnimationClip animationEnable)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 			AnimatorStateMachine stateMachine;
 
-			layer.name = KatSettings.ParamTextLogicPrefix + logicId.ToString();
+			layer.name = KatSettings.ParamTextVisible;
+			layer.defaultWeight = 1f;
+			layer.stateMachine = stateMachine = new AnimatorStateMachine();
+			layer.stateMachine.name = layer.name;
+			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
+
+			// Hide KAT state
+			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(300f, 200f, 0f));
+			stateDisabled.motion = animationDisable;
+			stateDisabled.writeDefaultValues = false;
+			stateDisabled.speed = 0f;
+
+			// Show KAT state
+			AnimatorState stateEnabled = stateMachine.AddState("Enabled", new Vector3(300f, 300f, 0f));
+			stateEnabled.motion = animationEnable;
+			stateEnabled.writeDefaultValues = false;
+			stateEnabled.speed = 0f;
+
+			AnimatorStateTransition enableTransition = stateDisabled.AddExitTransition(false);
+			enableTransition.destinationState = stateEnabled;
+			enableTransition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamTextVisible);
+			enableTransition.duration = 0;
+
+			AnimatorStateTransition disabledTransition = stateEnabled.AddExitTransition(false);
+			disabledTransition.destinationState = stateDisabled;
+			disabledTransition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
+			disabledTransition.duration = 0;
+
+			return layer;
+		}
+
+		private static AnimatorControllerLayer CreateSyncLayer(AnimatorController controller, int logicId, AnimationClip[] animationChars)
+		{
+			AnimatorControllerLayer layer = new AnimatorControllerLayer();
+			AnimatorStateMachine stateMachine;
+
+			layer.name = KatSettings.ParamTextSyncPrefix + logicId.ToString();
 			layer.defaultWeight = 1f;
 			layer.stateMachine = stateMachine = new AnimatorStateMachine();
 			layer.stateMachine.name = layer.name;
 			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
 
 			// Default state
-			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(0f, 200f, 0f));
+			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(300f, 200f, 0f));
 			stateDisabled.writeDefaultValues = false;
 			stateDisabled.speed = 0f;
 
 			// Standby state - waits for updates to the pointer
-			AnimatorState stateStandby = stateMachine.AddState("StandBy", new Vector3(0f, 500f, 0f));
+			AnimatorState stateStandby = stateMachine.AddState("StandBy", new Vector3(300f, 500f, 0f));
 			stateStandby.writeDefaultValues = false;
 			stateStandby.speed = 0f;
 
@@ -142,8 +191,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 				float pointerPosOffsetY = 500f + 50f * i;
 
-				AnimatorState statePointerChar = stateMachine.AddState("Pointer" + pointerIndex.ToString() + " Char" + charIndex, new Vector3(500f, pointerPosOffsetY, 0f));
-				statePointerChar.motion = charAnimations[charIndex];
+				AnimatorState statePointerChar = stateMachine.AddState("Pointer" + pointerIndex.ToString() + " Char" + charIndex, new Vector3(800f, pointerPosOffsetY, 0f));
+				statePointerChar.motion = animationChars[charIndex];
 				statePointerChar.timeParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
 				statePointerChar.timeParameterActive = true;
 				statePointerChar.writeDefaultValues = false;
@@ -159,6 +208,24 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, pointerIndex, KatSettings.ParamTextPointer);
 				pointerReturnTransition.duration = 0;
 			}
+
+			// Create clear state
+			AnimatorState stateClear = stateMachine.AddState("Clear Text", new Vector3(800f, 500f - 50f, 0f));
+			stateClear.motion = animationChars[KatSettings.TextLength];
+			stateClear.timeParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
+			stateClear.timeParameterActive = true;
+			stateClear.writeDefaultValues = false;
+			stateClear.speed = 0f;
+
+			AnimatorStateTransition clearStartTransition = stateStandby.AddExitTransition(false);
+			clearStartTransition.destinationState = stateClear;
+			clearStartTransition.AddCondition(AnimatorConditionMode.Equals, 255, KatSettings.ParamTextPointer);
+			clearStartTransition.duration = 0;
+
+			AnimatorStateTransition clearReturnTransition = stateClear.AddExitTransition(false);
+			clearReturnTransition.destinationState = stateStandby;
+			clearReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, 255, KatSettings.ParamTextPointer);
+			clearReturnTransition.duration = 0;
 
 			return layer;
 		}
