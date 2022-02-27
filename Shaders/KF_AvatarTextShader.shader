@@ -335,7 +335,13 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 
 			fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
 			{
+				// Flip text if looking at backface
 				if (!facing) {
+					i.uv.x = 1.0 - i.uv.x;
+				}
+
+				// Flip text if looking at the mirror
+				if (unity_CameraProjection[2][0] != 0.0 || unity_CameraProjection[2][1] != 0.0) {
 					i.uv.x = 1.0 - i.uv.x;
 				}
 
