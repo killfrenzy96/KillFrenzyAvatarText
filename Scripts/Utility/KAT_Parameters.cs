@@ -18,11 +18,68 @@
 
 #if UNITY_EDITOR
 
+using System.Collections.Generic;
+
+using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
+using ExpressionParameter = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters.Parameter;
+
+using KillFrenzy.AvatarTextTools.Settings;
+
 namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatParameterInstaller
 	{
+		public static bool InstallToParameters(ExpressionParameters targetParameters)
+		{
+			List<ExpressionParameter> parameters = new List<ExpressionParameter>();
+			parameters.AddRange(targetParameters.parameters);
 
+			parameters.Add(new ExpressionParameter() {
+				name = KatSettings.ParamTextVisible,
+				valueType = ExpressionParameters.ValueType.Bool,
+				defaultValue = 0,
+				saved = false
+			});
+
+			parameters.Add(new ExpressionParameter() {
+				name = KatSettings.ParamTextPointer,
+				valueType = ExpressionParameters.ValueType.Int,
+				defaultValue = 0,
+				saved = false
+			});
+
+			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
+				parameters.Add(new ExpressionParameter() {
+					name = KatSettings.ParamTextSyncPrefix + i.ToString(),
+					valueType = ExpressionParameters.ValueType.Float,
+					defaultValue = 0,
+					saved = false
+				});
+			}
+
+			targetParameters.parameters = parameters.ToArray();
+			return true;
+		}
+
+		public static bool RemoveFromParameters(ExpressionParameters targetParameters)
+		{
+			List<ExpressionParameter> parameters = new List<ExpressionParameter>();
+			parameters.AddRange(targetParameters.parameters);
+
+			for (int i = 0; i < targetParameters.parameters.Length; i++) {
+				ExpressionParameter parameter = targetParameters.parameters[i];
+				if (
+					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
+					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
+					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
+				) {
+					parameters.Remove(parameter);
+				}
+			}
+
+			targetParameters.parameters = parameters.ToArray();
+			return true;
+		}
 	}
 }
 
