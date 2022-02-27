@@ -27,6 +27,7 @@ using AnimatorController = UnityEditor.Animations.AnimatorController;
 
 using KillFrenzy.AvatarTextTools.Settings;
 
+
 namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatAnimatorInstaller
@@ -37,7 +38,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimationClip animationDisable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Disable");
 			AnimationClip animationEnable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Enable");
 			if (animationChars == null || animationDisable == null || animationEnable == null) {
-				Debug.Log("Failed: Resources/" + KatSettings.CharacterAnimationFolder + " is missing some animations.");
+				Debug.LogError("Failed: Resources/" + KatSettings.CharacterAnimationFolder + " is missing some animations.");
 				return false;
 			}
 

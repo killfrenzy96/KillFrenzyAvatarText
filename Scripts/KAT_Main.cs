@@ -23,6 +23,7 @@ using UnityEditor;
 
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
+using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 
 using KillFrenzy.AvatarTextTools.Utility;
 
@@ -33,7 +34,8 @@ namespace KillFrenzy.AvatarTextTools
 	{
 		private AnimatorController targetController = null;
 		private ExpressionParameters targetParameters = null;
-		private int tab = 1;
+		private VRCAvatarDescriptor targetAvatar = null;
+		private int tab = 0;
 
 
 		[MenuItem("Tools/KillFrenzy Avatar Text (KAT)")]
@@ -70,6 +72,37 @@ namespace KillFrenzy.AvatarTextTools
 
 			switch (tab) {
 				case 0: { // Simple installer
+					EditorGUILayout.LabelField("KAT Avatar Installer", subtitleStyle);
+
+					targetAvatar = EditorGUILayout.ObjectField("Avatar", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
+					EditorGUILayout.Space();
+
+					if (GUILayout.Button("Install/Update KAT")) {
+						if (targetAvatar == null) {
+							Debug.LogError("Failed: No VRC avatar has been selected.");
+						} else {
+							if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
+								Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
+							}
+							if (!KatAvatarInstaller.InstallToAvatar(targetAvatar)) {
+								Debug.LogError("KAT install failed.");
+							} else {
+								Debug.Log("KAT install complete.");
+							}
+						}
+					}
+
+					if (GUILayout.Button("Remove KAT")) {
+						if (targetAvatar == null) {
+							Debug.LogError("Failed: No avatar has been selected.");
+						} else {
+							if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
+								Debug.LogError("KAT removal failed.");
+							} else {
+								Debug.Log("KAT install complete.");
+							}
+						}
+					}
 					break;
 				}
 
@@ -77,19 +110,18 @@ namespace KillFrenzy.AvatarTextTools
 					// Animation controller installer
 					EditorGUILayout.LabelField("Install to Animation Controller", subtitleStyle);
 
-					targetController = EditorGUILayout.ObjectField("Animator", targetController, typeof(AnimatorController), true) as AnimatorController;
+					targetController = EditorGUILayout.ObjectField("Animator Controller", targetController, typeof(AnimatorController), true) as AnimatorController;
 					EditorGUILayout.Space();
 
 					if (GUILayout.Button("Install/Update KAT animations")) {
 						if (targetController == null) {
-							Debug.Log("Failed: No animator has been selected.");
+							Debug.LogError("Failed: No animator has been selected.");
 						} else {
-							Debug.Log("KAT animator install started.");
 							if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
-								Debug.Log("Warning: KAT animator removal failed. This is done before installation.");
+								Debug.LogWarning("Warning: KAT animator removal failed. This is done before installation.");
 							}
 							if (!KatAnimatorInstaller.InstallToAnimator(targetController)) {
-								Debug.Log("KAT animator install failed.");
+								Debug.LogError("KAT animator install failed.");
 							} else {
 								Debug.Log("KAT animator install complete.");
 							}
@@ -98,11 +130,10 @@ namespace KillFrenzy.AvatarTextTools
 
 					if (GUILayout.Button("Remove KAT animations")) {
 						if (targetController == null) {
-							Debug.Log("Failed: No animator has been selected.");
+							Debug.LogError("Failed: No animator has been selected.");
 						} else {
-							Debug.Log("KAT animator removal started.");
 							if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
-								Debug.Log("KAT animator removal failed.");
+								Debug.LogError("KAT animator removal failed.");
 							} else {
 								Debug.Log("KAT animator install complete.");
 							}
@@ -114,19 +145,18 @@ namespace KillFrenzy.AvatarTextTools
 					// Parameter installer
 					EditorGUILayout.LabelField("Install to Expression Parameters", subtitleStyle);
 
-					targetParameters = EditorGUILayout.ObjectField("Animator", targetParameters, typeof(ExpressionParameters), true) as ExpressionParameters;
+					targetParameters = EditorGUILayout.ObjectField("Expression Parameters", targetParameters, typeof(ExpressionParameters), true) as ExpressionParameters;
 					EditorGUILayout.Space();
 
 					if (GUILayout.Button("Install/Update KAT expression parameters")) {
 						if (targetParameters == null) {
-							Debug.Log("Failed: No expression parameters has been selected.");
+							Debug.LogError("Failed: No expression parameters has been selected.");
 						} else {
-							Debug.Log("KAT install started.");
-							if (!KatParameterInstaller.RemoveFromParameters(targetParameters)) {
-								Debug.Log("Warning: KAT expression parameters removal failed. This is done before installation.");
+							if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
+								Debug.LogWarning("Warning: KAT expression parameters removal failed. This is done before installation.");
 							}
-							if (!KatParameterInstaller.InstallToParameters(targetParameters)) {
-								Debug.Log("KAT expression parameters install failed.");
+							if (!KatParametersInstaller.InstallToParameters(targetParameters)) {
+								Debug.LogError("KAT expression parameters install failed.");
 							} else {
 								Debug.Log("KAT expression parameters install complete.");
 							}
@@ -134,14 +164,48 @@ namespace KillFrenzy.AvatarTextTools
 					}
 
 					if (GUILayout.Button("Remove KAT expression parameters")) {
-						if (targetController == null) {
-							Debug.Log("Failed: No expression parameters has been selected.");
+						if (targetParameters == null) {
+							Debug.LogError("Failed: No expression parameters has been selected.");
 						} else {
-							Debug.Log("KAT removal started.");
-							if (!KatParameterInstaller.RemoveFromParameters(targetParameters)) {
-								Debug.Log("KAT expression parameters removal failed.");
+							if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
+								Debug.LogError("KAT expression parameters removal failed.");
 							} else {
 								Debug.Log("KAT expression parameters install complete.");
+							}
+						}
+					}
+
+					EditorGUILayout.Space();
+
+					// Objects installer
+					EditorGUILayout.LabelField("Install Avatar Parts", subtitleStyle);
+
+					targetAvatar = EditorGUILayout.ObjectField("Avatar Descriptor", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
+					EditorGUILayout.Space();
+
+					if (GUILayout.Button("Install/Update KAT avatar parts")) {
+						if (targetAvatar == null) {
+							Debug.LogError("Failed: No VRC avatar descriptor has been selected.");
+						} else {
+							if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
+								Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
+							}
+							if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar)) {
+								Debug.LogError("KAT avatar parts install failed.");
+							} else {
+								Debug.Log("KAT avatar parts install complete.");
+							}
+						}
+					}
+
+					if (GUILayout.Button("Remove KAT avatar parts")) {
+						if (targetAvatar == null) {
+							Debug.LogError("Failed: No avatar descriptor has been selected.");
+						} else {
+							if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
+								Debug.LogError("KAT avatar parts removal failed.");
+							} else {
+								Debug.Log("KAT avatar parts install complete.");
 							}
 						}
 					}

@@ -31,6 +31,8 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const int TextLength = 128;
 		public const int SyncParamsSize = 4;
 		public const int PointerCount = TextLength / SyncParamsSize;
+
+		public const string GeneratedOutputFolderName = "KAT_GeneratedOutput";
 	}
 }
 

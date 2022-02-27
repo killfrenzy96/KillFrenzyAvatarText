@@ -25,9 +25,10 @@ using ExpressionParameter = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionPara
 
 using KillFrenzy.AvatarTextTools.Settings;
 
+
 namespace KillFrenzy.AvatarTextTools.Utility
 {
-	public static class KatParameterInstaller
+	public static class KatParametersInstaller
 	{
 		public static bool InstallToParameters(ExpressionParameters targetParameters)
 		{
