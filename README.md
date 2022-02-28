@@ -27,6 +27,7 @@ https://harunadev.booth.pm/items/3691327
 3. Upload the avatar.
 
 Be sure to enable OSC once you are in VRChat.
+
 ![EnableOSC](/Images/EnableOSC.gif)
 
 # Installation (Advanced)
