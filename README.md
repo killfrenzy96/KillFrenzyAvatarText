@@ -29,7 +29,7 @@ This includes the animator controller, material, parameters, a prefab for the KA
 An example avatar that has been completely setup is also included.
 
 # Developer Information
-A python example has been included with this project. It is located in the KATOSC folder.
+A python example has been included with this project. It is located in the KATOSC folder. (NOT AVAILABLE YET, WORK IN PROGRESS)
 
 This is some additional information if you would like to develop your own OSC software.
 
