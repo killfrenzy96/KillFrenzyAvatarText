@@ -1,5 +1,5 @@
 # This project is currently a work in progress.
-Not everything will be available just yet. You can check out the work early if you would like by downloading the source code.
+Not everything will be available just yet. You can check out the work early if you would like by downloading the source code or the preview release.
 
 # KillFrenzy Avatar Text (KAT)
 A text display system designed to be used on VRChat Avatars. This takes advantage of the new OSC (Open Sound Protocol) system that lets other programs interact with your VRChat avatar.
