@@ -33,7 +33,7 @@ Example files have been included in "Assets/KillFrenzy/AvatarText/Examples/"
 
 This includes the animator controller, material, parameters, a prefab for the KAT setup, and debug expression menu.
 
-An example avatar that has been completely setup is also included.
+An example avatar that has KAT installed is also included.
 
 # Developer Information
 An example will be available soon. It is a work in progress.
