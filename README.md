@@ -11,8 +11,8 @@ Keep in mind that there is no in-game menu or keyboard for this system. It is de
 # Recommended OSC programs
 You will need a program to use this avatar text.
 
-[English - ASCII] Keyboard App by harunadev
-harunadev has created an OSC program for the avatar text system. Check it out and download here:
+[English - ASCII] Keyboard App by harunadev&nbsp;&nbsp;
+harunadev has created an OSC program for the avatar text system. Check it out and download here:&nbsp;&nbsp;
 https://harunadev.booth.pm/items/3691327
 
 # Prerequisites
