@@ -10,6 +10,7 @@ Keep in mind that there is no in-game menu or keyboard for this system. It is de
 
 # Recommended OSC programs
 (NOT AVAILABLE YET, WORK IN PROGRESS)
+
 There will be an OSC program. It is still under development.
 
 # Prerequisites
@@ -25,7 +26,9 @@ There will be an OSC program. It is still under development.
 
 # Installation (Advanced)
 Example files have been included in "Assets/KillFrenzy/AvatarText/Examples/"
+
 This includes the animator controller, material, parameters, a prefab for the KAT setup, and debug expression menu.
+
 An example avatar that has been completely setup is also included.
 
 # Developer Information
