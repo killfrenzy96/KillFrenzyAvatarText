@@ -23,51 +23,7 @@ MonoBehaviour:
     subMenu: {fileID: 0}
     subParameters: []
     labels: []
-  - name: KAT Char 0
-    icon: {fileID: 0}
-    type: 203
-    parameter:
-      name: 
-    value: 1
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters:
-    - name: KAT_CharSync0
-    labels: []
-  - name: KAT Char 1
-    icon: {fileID: 0}
-    type: 203
-    parameter:
-      name: 
-    value: 1
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters:
-    - name: KAT_CharSync1
-    labels: []
-  - name: KAT Char 2
-    icon: {fileID: 0}
-    type: 203
-    parameter:
-      name: 
-    value: 1
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters:
-    - name: KAT_CharSync2
-    labels: []
-  - name: KAT Char 3
-    icon: {fileID: 0}
-    type: 203
-    parameter:
-      name: 
-    value: 1
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters:
-    - name: KAT_CharSync3
-    labels: []
-  - name: KAT Pointer 1
+  - name: KAT Pointer Position 1
     icon: {fileID: 0}
     type: 102
     parameter:
@@ -77,7 +33,7 @@ MonoBehaviour:
     subMenu: {fileID: 0}
     subParameters: []
     labels: []
-  - name: KAT Pointer 2
+  - name: KAT Pointer Position 2
     icon: {fileID: 0}
     type: 102
     parameter:
@@ -85,6 +41,46 @@ MonoBehaviour:
     value: 2
     style: 0
     subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: KAT Pointer Position 3
+    icon: {fileID: 0}
+    type: 102
+    parameter:
+      name: KAT_Pointer
+    value: 3
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: KAT Pointer Position 4
+    icon: {fileID: 0}
+    type: 102
+    parameter:
+      name: KAT_Pointer
+    value: 4
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: KAT Pointer Position 5
+    icon: {fileID: 0}
+    type: 102
+    parameter:
+      name: KAT_Pointer
+    value: 5
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
+  - name: Set Characters
+    icon: {fileID: 0}
+    type: 103
+    parameter:
+      name: 
+    value: 1
+    style: 0
+    subMenu: {fileID: 11400000, guid: fb6af3bd92b19d04487446eb6e321e87, type: 2}
     subParameters: []
     labels: []
   - name: KAT Clear Text
