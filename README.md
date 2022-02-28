@@ -6,10 +6,10 @@ A text display system designed to be used on VRChat Avatars. This takes advantag
 
 Keep in mind that there is no in-game menu or keyboard for this system. It is designed to be used by OSC. When VRChat avatar dynamics releases, I will consider creating an in-game keyboard for this.
 
-![InstallInstructions](/Images/KAT_Demonstration.gif)
+![Demonstration](/Images/KAT_Demonstration.gif)
 
 # Recommended OSC programs
-You will need a program to use this avatar text.
+You will need a program to use this avatar text by using VRChat OSC.
 
 [English - ASCII] Keyboard App by harunadev\
 harunadev has created an OSC program for the avatar text system. Check it out and download here:\
@@ -25,6 +25,9 @@ https://harunadev.booth.pm/items/3691327
 2. Use the KAT installer to add this to your avatar as shown below:
 ![InstallInstructions](/Images/KAT_Install_Simple.gif)
 3. Upload the avatar.
+
+Be sure to enable OSC once you are in VRChat.
+![EnableOSC](/Images/EnableOSC.gif)
 
 # Installation (Advanced)
 Example files have been included in "Assets/KillFrenzy/AvatarText/Examples/"
