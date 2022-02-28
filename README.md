@@ -32,7 +32,7 @@ This includes the animator controller, material, parameters, a prefab for the KA
 An example avatar that has been completely setup is also included.
 
 # Developer Information
-A python example will be available soon. It is a work in progress.
+An example will be available soon. It is a work in progress.
 
 This is some additional information if you would like to develop your own OSC software.
 
