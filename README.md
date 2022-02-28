@@ -36,7 +36,7 @@ A python example will be available soon. It is a work in progress.
 
 This is some additional information if you would like to develop your own OSC software.
 
-I recommend uploading the example avatar and playing with the debug menu first to get a better understanding of how the KAT system works. Make sure "KAT Visible" is turned on, then select a pointer position, then edit the characters.
+I recommend uploading the example avatar (YumiExample) and playing with the debug menu first to get a better understanding of how the KAT system works. Make sure "KAT Visible" is turned on, then select a pointer position, then edit the characters.
 
 Here's a short overview of how the KAT works:
 - The keyboard supports a limit of 128 letters in length.
