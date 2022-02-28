@@ -28,6 +28,7 @@ using AnimatorController = UnityEditor.Animations.AnimatorController;
 using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
 using ExpressionParameter = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters.Parameter;
+using ExpressionsMenu = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu;
 
 using KillFrenzy.AvatarTextTools.Settings;
 
@@ -42,6 +43,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			VRCAvatarDescriptor.CustomAnimLayer animatorLayer;
 			bool animatorLayerFound = false;
 			ExpressionParameters expressionParameters = avatarDescriptor.expressionParameters;
+			ExpressionsMenu expressionsMenu = avatarDescriptor.expressionsMenu;
 
 			foreach (VRCAvatarDescriptor.CustomAnimLayer animLayer in avatarDescriptor.baseAnimationLayers) {
 				if (animLayer.type == VRCAvatarDescriptor.AnimLayerType.FX) {
@@ -101,6 +103,17 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 				CreateOutputFolder();
 				AssetDatabase.CreateAsset(expressionParameters, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_ExpressionParameters_" + System.Guid.NewGuid().ToString() + ".asset");
+			}
+
+			// No menu found, insert default menu
+			if (!expressionsMenu) {
+				expressionsMenu = Resources.Load<ExpressionsMenu>("KAT_Misc/DefaultEmotes");
+				if (expressionsMenu) {
+					avatarDescriptor.expressionsMenu = expressionsMenu;
+				} else {
+					Debug.LogWarning("Warning: Could not insert default expressions menu.");
+					Debug.Log(expressionsMenu);
+				}
 			}
 
 			KatAnimatorInstaller.InstallToAnimator(animatorControllerFx);

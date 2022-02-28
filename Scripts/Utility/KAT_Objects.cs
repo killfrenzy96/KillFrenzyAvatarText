@@ -32,7 +32,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		{
 			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform avatarHeadTransform = FindAvatarHead(avatarRootTransform);
-			Material textMaterial = Resources.Load<Material>("KAT_Materials/KAT_Text");
+			Material textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");
 
 			if (avatarHeadTransform == null) {
 				Debug.LogWarning("Warning: Avatar head not found.");
@@ -78,11 +78,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		{
 			Transform avatarRootTransform = avatar.gameObject.transform;
 			Transform katObjectTransform = avatarRootTransform.transform.Find("KillFrenzyAvatarText");
-			try {
-				GameObject.DestroyImmediate(katObjectTransform.gameObject);
-			} catch {
-				Debug.LogWarning("Warning: Unable to destroy the KillFrenzyAvatarText object.");
-				return false;
+			if (katObjectTransform) {
+				try {
+					GameObject.DestroyImmediate(katObjectTransform.gameObject);
+				} catch {
+					Debug.LogWarning("Warning: Unable to destroy the KillFrenzyAvatarText object.");
+					return false;
+				}
 			}
 			return true;
 		}
