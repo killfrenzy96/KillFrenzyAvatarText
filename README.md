@@ -12,8 +12,8 @@ Keep in mind that there is no in-game menu or keyboard for this system. It is de
 You will need a program to use this avatar text.
 
 [English - ASCII] Keyboard App by harunadev
-- harunadev has created an OSC program for the avatar text system. Check it out and download here:
-- https://harunadev.booth.pm/items/3691327
+harunadev has created an OSC program for the avatar text system. Check it out and download here:
+https://harunadev.booth.pm/items/3691327
 
 # Prerequisites
 - Unity 2019.4.31f1
