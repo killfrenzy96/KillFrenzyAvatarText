@@ -22,10 +22,10 @@ https://harunadev.booth.pm/items/3691327
 
 # Installation (Simple)
 1. Download the latest unity package from the releases: https://github.com/killfrenzy96/KillFrenzyAvatarText/releases
-2. Use the KAT installer to add this to your avatar as shown below:
+2. Use the KAT installer to add this to your avatar as shown below:\
 ![InstallInstructions](/Images/KAT_Install_Simple.gif)
 3. Upload the avatar.
-4. Be sure to enable OSC once you are in VRChat.
+4. Be sure to enable OSC once you are in VRChat.\
 ![EnableOSC](/Images/EnableOSC.gif)
 
 # Installation (Advanced)
