@@ -59,6 +59,8 @@ This will directly replace my old VRC Avatar Keyboard system. It replaces the pa
 
 On top of that, installation is automated and much more simple to setup. This allows a greater playerbase to take advantage of this.
 
+I have plans to implement an in-game keyboard with VRC Avatar Dynamics. I will have to determine that is possible to do so when Avatar Dynamics is available.
+
 # Donation
 If you like this software and feel like gifting me something, you can donate to me here:
 
