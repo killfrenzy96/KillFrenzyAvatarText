@@ -54,6 +54,11 @@ There are 6 syncronised expression parameters. Here's a short overview of what t
 
 If you require additional information, please join the official VRChat server (https://discord.gg/vrchat) and send me a message directly (KillFrenzy#7777).
 
+# Why have I made this?
+This will directly replace my old VRC Avatar Keyboard system. It replaces the particle text on the old keyboard with a shader. This greatly improves performance and even makes it possible to place this on an excellent performance ranked avatar.
+
+On top of that, installation is automated and much more simple to setup. This allows a greater playerbase to take advantage of this.
+
 # Donation
 If you like this software and feel like gifting me something, you can donate to me here:
 
