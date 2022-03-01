@@ -34,6 +34,13 @@ namespace KillFrenzy.AvatarTextTools.Settings
 
 		public const string GeneratedOutputFolderName = "KAT_GeneratedOutput";
 	}
+
+	public static class KatAttachmentPoint
+	{
+		public const int None = 0;
+		public const int Head = 1;
+		public const int Chest = 2;
+	}
 }
 
 #endif

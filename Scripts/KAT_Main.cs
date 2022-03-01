@@ -26,6 +26,7 @@ using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionPar
 using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 
 using KillFrenzy.AvatarTextTools.Utility;
+using KillFrenzy.AvatarTextTools.Settings;
 
 
 namespace KillFrenzy.AvatarTextTools
@@ -35,7 +36,9 @@ namespace KillFrenzy.AvatarTextTools
 		private AnimatorController targetController = null;
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
+		private int attachmentPoint = KatAttachmentPoint.Head;
 		private int tab = 0;
+		private bool optionsExpand = false;
 
 
 		[MenuItem("Tools/KillFrenzy Avatar Text (KAT)")]
@@ -77,6 +80,25 @@ namespace KillFrenzy.AvatarTextTools
 					targetAvatar = EditorGUILayout.ObjectField("Avatar", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
 					EditorGUILayout.Space();
 
+					if (optionsExpand = GUILayout.Toggle(optionsExpand, "Options", new GUIStyle("ToolbarDropDown") {
+						fontSize = 12,
+						fixedHeight = 22,
+						fontStyle = FontStyle.Bold
+					})) {
+						EditorGUILayout.Space();
+
+						EditorGUILayout.LabelField("Attachment Point");
+						attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
+							"None",
+							"Head",
+							"Chest"
+						});
+
+						EditorGUILayout.Space();
+					}
+
+					EditorGUILayout.Space();
+
 					if (GUILayout.Button("Install/Update KAT")) {
 						if (targetAvatar == null) {
 							Debug.LogError("Failed: No VRC avatar has been selected.");
@@ -84,7 +106,7 @@ namespace KillFrenzy.AvatarTextTools
 							if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
 								Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
 							}
-							if (!KatAvatarInstaller.InstallToAvatar(targetAvatar)) {
+							if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint)) {
 								Debug.LogError("KAT install failed.");
 							} else {
 								Debug.Log("KAT install complete.");
@@ -183,6 +205,14 @@ namespace KillFrenzy.AvatarTextTools
 					targetAvatar = EditorGUILayout.ObjectField("Avatar Descriptor", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
 					EditorGUILayout.Space();
 
+					EditorGUILayout.LabelField("Attachment Point");
+					attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
+						"None",
+						"Head",
+						"Chest"
+					});
+					EditorGUILayout.Space();
+
 					if (GUILayout.Button("Install/Update KAT avatar parts")) {
 						if (targetAvatar == null) {
 							Debug.LogError("Failed: No VRC avatar descriptor has been selected.");
@@ -190,7 +220,7 @@ namespace KillFrenzy.AvatarTextTools
 							if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
 								Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
 							}
-							if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar)) {
+							if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint)) {
 								Debug.LogError("KAT avatar parts install failed.");
 							} else {
 								Debug.Log("KAT avatar parts install complete.");

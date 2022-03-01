@@ -23,19 +23,40 @@ using UnityEngine.Animations;
 
 using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 
+using KillFrenzy.AvatarTextTools.Settings;
+
 
 namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatObjectsInstaller
 	{
-		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor)
+		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint)
 		{
-			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
-			Transform avatarHeadTransform = FindAvatarHead(avatarRootTransform);
 			Material textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");
+			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
+			Transform avatarAttachmentTransform = null;
+			Vector3 avatarAttachmentOffset = new Vector3(0.0f, 1.0f, 0.4f);
 
-			if (avatarHeadTransform == null) {
-				Debug.LogWarning("Warning: Avatar head not found.");
+
+			switch (attachmentPoint) {
+				case KatAttachmentPoint.Head: {
+					avatarAttachmentTransform = FindAvatarHead(avatarRootTransform);
+					if (avatarAttachmentTransform == null) {
+						Debug.LogWarning("Warning: Avatar head not found.");
+					} else {
+						avatarAttachmentOffset = new Vector3(-0.4f, 0.15f, 0.0f);
+					}
+					break;
+				}
+				case KatAttachmentPoint.Chest: {
+					avatarAttachmentTransform = FindAvatarChest(avatarRootTransform);
+					if (avatarAttachmentTransform == null) {
+						Debug.LogWarning("Warning: Avatar chest not found.");
+					} else {
+						avatarAttachmentOffset = new Vector3(-0.0f, 0.0f, 0.4f);
+					}
+					break;
+				}
 			}
 
 			if (textMaterial == null) {
@@ -52,18 +73,22 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			ParentConstraint constraint = constraintObject.AddComponent<ParentConstraint>();
 			constraint.locked = true;
-			if (avatarHeadTransform != null) {
+			if (avatarAttachmentTransform != null) {
 				ConstraintSource constraintSource = new ConstraintSource();
-				constraintSource.sourceTransform = avatarHeadTransform;
+				constraintSource.sourceTransform = avatarAttachmentTransform;
 				constraintSource.weight = 1f;
 				constraint.AddSource(constraintSource);
 				constraint.constraintActive = true;
+
+				if (attachmentPoint == KatAttachmentPoint.Chest) {
+					constraint.rotationAxis = Axis.Y | Axis.Z;
+				}
 			}
 
 			GameObject textObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			textObject.name = "Text";
 			textObject.transform.SetParent(constraintObject.transform);
-			textObject.transform.localPosition = new Vector3(-0.4f, 0.15f, 0.0f);
+			textObject.transform.localPosition = avatarAttachmentOffset;
 			textObject.transform.localScale = new Vector3(0.5f, 1f / 6f, 1.0f);
 
 			GameObject.DestroyImmediate(textObject.GetComponent<MeshCollider>());
@@ -87,6 +112,18 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				}
 			}
 			return true;
+		}
+
+		private static Transform FindAvatarChest(Transform transform)
+		{
+			Transform chest = FindTransformRecursive(transform, "chest");
+
+			if (chest != null) {
+				Transform neck = FindTransformRecursive(transform, "neck");
+				return chest;
+			}
+
+			return null;
 		}
 
 		private static Transform FindAvatarHead(Transform transform)
