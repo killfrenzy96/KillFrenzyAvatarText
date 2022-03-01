@@ -37,6 +37,8 @@ namespace KillFrenzy.AvatarTextTools
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
 		private int attachmentPoint = KatAttachmentPoint.Head;
+		private int charSet = KatCharSet.English;
+
 		private int tab = 0;
 		private bool optionsExpand = false;
 
@@ -49,6 +51,8 @@ namespace KillFrenzy.AvatarTextTools
 
 		private void OnGUI()
 		{
+			// This section needs some refactoring
+
 			GUIStyle titleStyle = new GUIStyle() {
 				fontSize = 14,
 				fixedHeight = 28,
@@ -87,6 +91,14 @@ namespace KillFrenzy.AvatarTextTools
 					})) {
 						EditorGUILayout.Space();
 
+						EditorGUILayout.LabelField("Language");
+						charSet = EditorGUILayout.Popup(charSet, new string[2] {
+							"English",
+							"Japanese"
+						});
+
+						EditorGUILayout.Space();
+
 						EditorGUILayout.LabelField("Attachment Point");
 						attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
 							"None",
@@ -106,7 +118,7 @@ namespace KillFrenzy.AvatarTextTools
 							if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
 								Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
 							}
-							if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint)) {
+							if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint, charSet)) {
 								Debug.LogError("KAT install failed.");
 							} else {
 								Debug.Log("KAT install complete.");
@@ -205,12 +217,21 @@ namespace KillFrenzy.AvatarTextTools
 					targetAvatar = EditorGUILayout.ObjectField("Avatar Descriptor", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
 					EditorGUILayout.Space();
 
+					EditorGUILayout.LabelField("Language");
+					charSet = EditorGUILayout.Popup(charSet, new string[2] {
+						"English",
+						"Japanese"
+					});
+
+					EditorGUILayout.Space();
+
 					EditorGUILayout.LabelField("Attachment Point");
 					attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
 						"None",
 						"Head",
 						"Chest"
 					});
+
 					EditorGUILayout.Space();
 
 					if (GUILayout.Button("Install/Update KAT avatar parts")) {
@@ -220,7 +241,7 @@ namespace KillFrenzy.AvatarTextTools
 							if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
 								Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
 							}
-							if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint)) {
+							if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint, charSet)) {
 								Debug.LogError("KAT avatar parts install failed.");
 							} else {
 								Debug.Log("KAT avatar parts install complete.");

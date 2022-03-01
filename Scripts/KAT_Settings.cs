@@ -41,6 +41,12 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const int Head = 1;
 		public const int Chest = 2;
 	}
+
+	public static class KatCharSet
+	{
+		public const int English = 0;
+		public const int Japanese = 1;
+	}
 }
 
 #endif
