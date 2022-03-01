@@ -481,11 +481,12 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float2 uvTile = 1.0 / uvSize;
 				float2 charTile = 1.0 / charSize;
 
+				float charLimit = uvSize.x * uvSize.y;
 				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
 				float charCurrent = round(chars[clamp(charPosition, 0, 127)]);
-				charCurrent = min(charCurrent, uvSize.x * uvSize.y);
+				charCurrent = min(charCurrent, charLimit);
 				if (charCurrent < 0) {
-					charCurrent += floor(charCurrent / (uvSize.x * uvSize.y)) * (uvSize.x * uvSize.y);
+					charCurrent += floor(charCurrent / charLimit) * charLimit;
 				}
 
 				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
