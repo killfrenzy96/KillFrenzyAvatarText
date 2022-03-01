@@ -34,10 +34,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 	{
 		public static bool InstallToAnimator(AnimatorController controller, bool writeDefaults = false)
 		{
-			AnimationClip[] animationChars = GetCharAnimations();
+			AnimationClip[] animationChars = GetCharAnimations(false);
+			AnimationClip[] animationCharsEnd = GetCharAnimations(true);
 			AnimationClip animationDisable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Disable");
 			AnimationClip animationEnable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Enable");
-			if (animationChars == null || animationDisable == null || animationEnable == null) {
+			if (animationChars == null || animationCharsEnd == null || animationDisable == null || animationEnable == null) {
 				Debug.LogError("Failed: Resources/" + KatSettings.CharacterAnimationFolder + " is missing some animations.");
 				return false;
 			}
@@ -53,7 +54,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			// Add Layers
 			controller.AddLayer(CreateToggleLayer(controller, animationDisable, animationEnable));
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
-				controller.AddLayer(CreateSyncLayer(controller, i, animationChars));
+				controller.AddLayer(CreateSyncLayer(controller, i, animationChars, animationCharsEnd));
 			}
 
 			return true;
@@ -86,7 +87,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return true;
 		}
 
-		private static AnimationClip[] GetCharAnimations() {
+		private static AnimationClip[] GetCharAnimations(bool end = false) {
 			AnimationClip[] animationClips = Resources.LoadAll<AnimationClip>(KatSettings.CharacterAnimationFolder);
 			AnimationClip[] orderedAnimationClips = new AnimationClip[KatSettings.TextLength + 1];
 
@@ -94,7 +95,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			for (int i = 0; i < KatSettings.TextLength; i++) {
 				orderedAnimationClips[i] = null;
 				foreach (var animationClip in animationClips) {
-					if (animationClip.name == KatSettings.CharacterAnimationClipNamePrefix + i.ToString()) {
+					string name;
+					if (end) {
+						name = KatSettings.CharacterAnimationClipNamePrefix + "End" + i.ToString();
+					} else {
+						name = KatSettings.CharacterAnimationClipNamePrefix + i.ToString();
+					}
+					if (animationClip.name == name) {
 						orderedAnimationClips[i] = animationClip;
 						break;
 					}
@@ -155,7 +162,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return layer;
 		}
 
-		private static AnimatorControllerLayer CreateSyncLayer(AnimatorController controller, int logicId, AnimationClip[] animationChars)
+		private static AnimatorControllerLayer CreateSyncLayer(AnimatorController controller, int logicId, AnimationClip[] animationChars, AnimationClip[] animationCharsEnd)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 			AnimatorStateMachine stateMachine;
@@ -192,8 +199,16 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 				float pointerPosOffsetY = 500f + 50f * i;
 
+				BlendTree blendTree = new BlendTree();
+				controller.CreateBlendTreeInController("Char" + charIndex + " BlendTree", out blendTree);
+				blendTree.blendParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
+				blendTree.blendType = BlendTreeType.Simple1D;
+				blendTree.useAutomaticThresholds = false;
+				blendTree.AddChild(animationChars[charIndex], -1.0f);
+				blendTree.AddChild(animationCharsEnd[charIndex], 1.0f);
+
 				AnimatorState statePointerChar = stateMachine.AddState("Pointer" + pointerIndex.ToString() + " Char" + charIndex, new Vector3(800f, pointerPosOffsetY, 0f));
-				statePointerChar.motion = animationChars[charIndex];
+				statePointerChar.motion = blendTree;
 				statePointerChar.timeParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
 				statePointerChar.timeParameterActive = true;
 				statePointerChar.writeDefaultValues = false;

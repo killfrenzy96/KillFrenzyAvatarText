@@ -91,7 +91,6 @@ namespace KillFrenzy.AvatarTextTools
 				}
 
 				case 1: { // Modular installer
-					// Animation controller installer
 					DrawAdvanced();
 					break;
 				}

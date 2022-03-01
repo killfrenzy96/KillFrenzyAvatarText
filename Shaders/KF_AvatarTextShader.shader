@@ -335,7 +335,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 
 			fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
 			{
-				// Flip text if looking at backface
+				// Flip text if looking at the backface
 				if (!facing) {
 					i.uv.x = 1.0 - i.uv.x;
 				}
@@ -482,9 +482,11 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float2 charTile = 1.0 / charSize;
 
 				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
-				float charCurrent = round(chars[max(min(charPosition, 127), 0)]);
-
-				charCurrent = max(min(charCurrent, uvSize.x * uvSize.y), 0.0);
+				float charCurrent = round(chars[clamp(charPosition, 0, 127)]);
+				charCurrent = min(charCurrent, uvSize.x * uvSize.y);
+				if (charCurrent < 0) {
+					charCurrent += floor(charCurrent / (uvSize.x * uvSize.y)) * (uvSize.x * uvSize.y);
+				}
 
 				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
 				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 - ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
