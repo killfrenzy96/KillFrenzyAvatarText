@@ -12,6 +12,10 @@ You will need a program to use this avatar text by using VRChat OSC.
 harunadev has created an OSC program for the avatar text system. Check it out and download here:\
 https://harunadev.booth.pm/items/3691327
 
+[英語＆日本語] KillFrenzy's Avatar Text (KAT) 日本語入力プログラム by harunadev\
+This is the Japanese version of harunadev's app:\
+https://harunadev.booth.pm/items/3692774
+
 # Prerequisites
 - Unity 2019.4.31f1
 - VRCSDK3
