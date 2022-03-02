@@ -50,7 +50,10 @@ Here's a short overview of how the KAT works:
 	- The pointer position ranges from 1 to 32.
 	- Pointer position 1 edits letters 1 to 4. Pointer postion 2 edits letters 5 to 8. Pointer position 3 edits letters 9 to 12. It keeps going for 32 pointers.
 	- Setting the pointer position at 255 will clear all the text.
-- There are 4 sync variables, each editing a different letter. The values can be set between -1.0 and 1.0, with each (1 / 127) increment representing a different character.
+- There are 4 sync variables, each editing a different letter.
+	- The values can be set between -1.0 and 1.0, with each (1 / 127) increment representing a different character.
+	- The values from 0.0 to 1.0 will represent the characters from 0 to 127.
+	- The values from -1.0 to 0.0 will represent the characters from 129 to 255.
 
 There are 6 syncronised expression parameters. Here's a short overview of what they do:
 - KAT_Visible (Bool): Used to show or hide the text.
