@@ -37,7 +37,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatAvatarInstaller
 	{
-		public static bool InstallToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint = KatAttachmentPoint.Head, int charSet = KatCharSet.English)
+		public static bool InstallToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint = KatAttachmentPoint.Head)
 		{
 			AnimatorController animatorControllerFx = null;
 			VRCAvatarDescriptor.CustomAnimLayer animatorLayer;
@@ -118,7 +118,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			KatAnimatorInstaller.InstallToAnimator(animatorControllerFx);
 			KatParametersInstaller.InstallToParameters(expressionParameters);
-			KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint, charSet);
+			KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint);
 
 			return true;
 		}

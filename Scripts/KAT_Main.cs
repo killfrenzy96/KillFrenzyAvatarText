@@ -37,7 +37,6 @@ namespace KillFrenzy.AvatarTextTools
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
 		private int attachmentPoint = KatAttachmentPoint.Head;
-		private int charSet = KatCharSet.English;
 
 		private int tab = 0;
 		private bool optionsExpand = false;
@@ -114,7 +113,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
 						Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
 					}
-					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint, charSet)) {
+					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint)) {
 						Debug.LogError("KAT install failed.");
 					} else {
 						Debug.Log("KAT install complete.");
@@ -223,7 +222,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
 						Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
 					}
-					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint, charSet)) {
+					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint)) {
 						Debug.LogError("KAT avatar parts install failed.");
 					} else {
 						Debug.Log("KAT avatar parts install complete.");
@@ -247,14 +246,6 @@ namespace KillFrenzy.AvatarTextTools
 		private void DrawOptions()
 		{
 			if (optionsExpand = GUILayout.Toggle(optionsExpand, "Options", dropdownStyle)) {
-				EditorGUILayout.Space();
-
-				EditorGUILayout.LabelField("Language");
-				charSet = EditorGUILayout.Popup(charSet, new string[2] {
-					"English",
-					"Japanese"
-				});
-
 				EditorGUILayout.Space();
 
 				EditorGUILayout.LabelField("Attachment Point");

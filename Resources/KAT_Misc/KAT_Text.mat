@@ -214,7 +214,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _TileX: 16
-    - _TileY: 6
+    - _TileY: 16
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:

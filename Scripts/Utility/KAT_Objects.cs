@@ -30,9 +30,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatObjectsInstaller
 	{
-		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint = KatAttachmentPoint.Head, int charSet = KatCharSet.English)
+		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint = KatAttachmentPoint.Head)
 		{
-			Material textMaterial = null;
+			Material textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");;
 			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform avatarAttachmentTransform = null;
 			Vector3 avatarAttachmentOffset = new Vector3(0.0f, 1.0f, 0.4f);
@@ -55,17 +55,6 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					} else {
 						avatarAttachmentOffset = new Vector3(-0.0f, 0.0f, 0.4f);
 					}
-					break;
-				}
-			}
-
-			switch (charSet) {
-				case KatCharSet.English: {
-					textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");
-					break;
-				}
-				case KatCharSet.Japanese: {
-					textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text_Japanese");
 					break;
 				}
 			}
