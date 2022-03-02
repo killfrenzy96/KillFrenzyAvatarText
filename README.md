@@ -8,13 +8,14 @@ Keep in mind that there is no in-game menu or keyboard for this system. It is de
 # Recommended OSC programs
 You will need a program to use this avatar text by using VRChat OSC.
 
-[English - ASCII] Keyboard App by harunadev\
-harunadev has created an OSC program for the avatar text system. Check it out and download here:\
-https://harunadev.booth.pm/items/3691327
+**KillFrenzy Avatar Text OSC App**\
+A simple OSC app for KAT. Download it here:\
+https://github.com/killfrenzy96/KatOscApp
 
-[英語＆日本語] KillFrenzy's Avatar Text (KAT) 日本語入力プログラム by harunadev\
-This is the Japanese version of harunadev's app:\
-https://harunadev.booth.pm/items/3692774
+**[English - ASCII] Keyboard App by harunadev**\
+harunadev has created an OSC program for the avatar text system. Check it out and download here:\
+English: https://harunadev.booth.pm/items/3691327
+Japanese: https://harunadev.booth.pm/items/3692774
 
 # Prerequisites
 - Unity 2019.4.31f1
@@ -37,7 +38,8 @@ This includes the animator controller, material, parameters, a prefab for the KA
 An example avatar that has KAT installed is also included.
 
 # Developer Information
-An example will be available soon. It is a work in progress.
+I have an open source KAT app written in python. You can have a look here:\
+https://github.com/killfrenzy96/KatOscApp
 
 This is some additional information if you would like to develop your own OSC software.
 
