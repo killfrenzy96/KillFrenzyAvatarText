@@ -12,7 +12,7 @@ You will need a program to use this avatar text by using VRChat OSC.
 A simple OSC app for KAT. Download it here:\
 https://github.com/killfrenzy96/KatOscApp
 
-**[English - ASCII] Keyboard App by harunadev**\
+**Keyboard App by harunadev**\
 harunadev has created an OSC program for the avatar text system. Check it out and download here:\
 English: https://harunadev.booth.pm/items/3691327
 Japanese: https://harunadev.booth.pm/items/3692774
