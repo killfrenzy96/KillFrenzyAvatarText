@@ -36,7 +36,7 @@ namespace KillFrenzy.AvatarTextTools
 		private AnimatorController targetController = null;
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
-		private int attachmentPoint = KatAttachmentPoint.Head;
+		private int attachmentPoint = KatAttachmentPoint.Chest;
 
 		private int tab = 0;
 		private bool optionsExpand = false;
