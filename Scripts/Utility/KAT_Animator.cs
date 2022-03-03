@@ -61,6 +61,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		}
 
 		public static bool RemoveFromAnimator(AnimatorController controller) {
+			// Remove Blend Trees
+			// AssetDatabase.RemoveObjectFromAsset();
+			// BlendTree[] blendTrees = controller.GetStateEffectiveMotion();
+
 			// Remove Layers
 			for (int i = controller.layers.Length - 1; i >= 0; i--) {
 				AnimatorControllerLayer layer = controller.layers[i];
@@ -68,6 +72,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					layer.name.StartsWith(KatSettings.ParamTextVisible) ||
 					layer.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {
+					// Remove Blend Trees
+					foreach (ChildAnimatorState childState in layer.stateMachine.states) {
+						if (childState.state.motion != null && childState.state.motion is BlendTree) {
+							AssetDatabase.RemoveObjectFromAsset(childState.state.motion);
+						}
+					}
 					controller.RemoveLayer(i);
 				}
 			}
@@ -200,12 +210,14 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				float pointerPosOffsetY = 500f + 50f * i;
 
 				BlendTree blendTree = new BlendTree();
-				controller.CreateBlendTreeInController("Char" + charIndex + " BlendTree", out blendTree);
+				// controller.CreateBlendTreeInController("Char" + charIndex + " BlendTree", out blendTree);
+				blendTree.name = "Char" + charIndex + " BlendTree";
 				blendTree.blendParameter = KatSettings.ParamTextSyncPrefix + logicId.ToString();
 				blendTree.blendType = BlendTreeType.Simple1D;
 				blendTree.useAutomaticThresholds = false;
 				blendTree.AddChild(animationChars[charIndex], -1.0f);
 				blendTree.AddChild(animationCharsEnd[charIndex], 1.0f);
+				AssetDatabase.AddObjectToAsset(blendTree, AssetDatabase.GetAssetPath(controller));
 
 				AnimatorState statePointerChar = stateMachine.AddState("Pointer" + pointerIndex.ToString() + " Char" + charIndex, new Vector3(800f, pointerPosOffsetY, 0f));
 				statePointerChar.motion = blendTree;

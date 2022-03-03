@@ -116,11 +116,15 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				}
 			}
 
-			KatAnimatorInstaller.InstallToAnimator(animatorControllerFx);
-			KatParametersInstaller.InstallToParameters(expressionParameters);
-			KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint);
-
-			return true;
+			if (
+				KatAnimatorInstaller.InstallToAnimator(animatorControllerFx) &&
+				KatParametersInstaller.InstallToParameters(expressionParameters) &&
+				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint)
+			) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		public static bool RemoveFromAvatar(VRCAvatarDescriptor avatarDescriptor)
