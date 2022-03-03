@@ -14,7 +14,7 @@ https://github.com/killfrenzy96/KatOscApp
 
 **Keyboard App by harunadev**\
 harunadev has created an OSC program for the avatar text system. Check it out and download here:\
-English: https://harunadev.booth.pm/items/3691327
+English: https://harunadev.booth.pm/items/3691327 \
 Japanese: https://harunadev.booth.pm/items/3692774
 
 # Prerequisites
