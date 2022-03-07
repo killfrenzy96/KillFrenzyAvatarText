@@ -32,7 +32,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatAnimatorInstaller
 	{
-		public static bool InstallToAnimator(AnimatorController controller, bool writeDefaults = false)
+		public static bool InstallToAnimator(AnimatorController controller)
 		{
 			AnimationClip[] animationChars = GetCharAnimations(false);
 			AnimationClip[] animationCharsEnd = GetCharAnimations(true);
@@ -226,6 +226,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				statePointerChar.writeDefaultValues = false;
 				statePointerChar.speed = 0f;
 
+				// Create transitions to activate pointer
 				AnimatorStateTransition pointerStartTransition = stateStandby.AddExitTransition(false);
 				pointerStartTransition.destinationState = statePointerChar;
 				pointerStartTransition.AddCondition(AnimatorConditionMode.Equals, pointerIndex, KatSettings.ParamTextPointer);
@@ -235,6 +236,14 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				pointerReturnTransition.destinationState = stateStandby;
 				pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, pointerIndex, KatSettings.ParamTextPointer);
 				pointerReturnTransition.duration = 0;
+
+				// Create alternate transitions to point to a single character at a time (for in-game keyboard)
+				// AnimatorStateTransition altStartTransition = stateStandby.AddExitTransition(false);
+				// altStartTransition.destinationState = statePointerChar;
+				// altStartTransition.AddCondition(AnimatorConditionMode.Equals, KatSettings.PointerAltSyncOffset + charIndex, KatSettings.ParamTextPointer);
+				// altStartTransition.duration = 0;
+
+				// pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, KatSettings.PointerAltSyncOffset + charIndex, KatSettings.ParamTextPointer);
 			}
 
 			// Create clear state
