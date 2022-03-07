@@ -37,6 +37,7 @@ namespace KillFrenzy.AvatarTextTools
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
 		private int attachmentPoint = KatAttachmentPoint.Chest;
+		private int installKeyboard = 1;
 
 		private int tab = 0;
 		private bool optionsExpand = false;
@@ -103,7 +104,9 @@ namespace KillFrenzy.AvatarTextTools
 			targetAvatar = EditorGUILayout.ObjectField("Avatar", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
 			EditorGUILayout.Space();
 
-			DrawOptions();
+			if (optionsExpand = GUILayout.Toggle(optionsExpand, "Options", dropdownStyle)) {
+				DrawOptions();
+			}
 			EditorGUILayout.Space();
 
 			if (GUILayout.Button("Install/Update KAT")) {
@@ -113,7 +116,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
 						Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
 					}
-					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint)) {
+					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint, installKeyboard != 0 ? true : false)) {
 						Debug.LogError("KAT install failed.");
 					} else {
 						Debug.Log("KAT install complete.");
@@ -136,6 +139,10 @@ namespace KillFrenzy.AvatarTextTools
 
 		private void DrawAdvanced()
 		{
+			EditorGUILayout.LabelField("Options", subtitleStyle);
+			DrawOptions();
+			EditorGUILayout.Space();
+
 			// Animation controller installer
 			EditorGUILayout.LabelField("Install to Animation Controller", subtitleStyle);
 
@@ -149,7 +156,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
 						Debug.LogWarning("Warning: KAT animator removal failed. This is done before installation.");
 					}
-					if (!KatAnimatorInstaller.InstallToAnimator(targetController)) {
+					if (!KatAnimatorInstaller.InstallToAnimator(targetController, installKeyboard != 0 ? true : false)) {
 						Debug.LogError("KAT animator install failed.");
 					} else {
 						Debug.Log("KAT animator install complete.");
@@ -212,9 +219,6 @@ namespace KillFrenzy.AvatarTextTools
 			targetAvatar = EditorGUILayout.ObjectField("Avatar Descriptor", targetAvatar, typeof(VRCAvatarDescriptor), true) as VRCAvatarDescriptor;
 			EditorGUILayout.Space();
 
-			DrawOptions();
-			EditorGUILayout.Space();
-
 			if (GUILayout.Button("Install/Update KAT avatar parts")) {
 				if (targetAvatar == null) {
 					Debug.LogError("Failed: No VRC avatar descriptor has been selected.");
@@ -245,18 +249,24 @@ namespace KillFrenzy.AvatarTextTools
 
 		private void DrawOptions()
 		{
-			if (optionsExpand = GUILayout.Toggle(optionsExpand, "Options", dropdownStyle)) {
-				EditorGUILayout.Space();
+			EditorGUILayout.Space();
 
-				EditorGUILayout.LabelField("Attachment Point");
-				attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
-					"None",
-					"Head",
-					"Chest"
-				});
+			EditorGUILayout.LabelField("Include In-game keyboard");
+			attachmentPoint = EditorGUILayout.Popup(installKeyboard, new string[2] {
+				"No",
+				"Yes"
+			});
 
-				EditorGUILayout.Space();
-			}
+			EditorGUILayout.Space();
+
+			EditorGUILayout.LabelField("Attachment Point");
+			attachmentPoint = EditorGUILayout.Popup(attachmentPoint, new string[3] {
+				"None",
+				"Head",
+				"Chest"
+			});
+
+			EditorGUILayout.Space();
 		}
 	}
 }
