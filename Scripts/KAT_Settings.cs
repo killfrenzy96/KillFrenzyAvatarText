@@ -27,6 +27,7 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const string ParamTextSyncPrefix = "KAT_CharSync";
 
 		public const string ParamKeyboardPrefix = "KAT_Keyboard";
+		public const string ParamKeyboardPressed = "KAT_KeyboardPressed";
 		public const int KeyboardKeysCount = 96;
 
 		public const string CharacterAnimationFolder = "KAT_CharAnimations/";

@@ -131,7 +131,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
 						Debug.LogError("KAT removal failed.");
 					} else {
-						Debug.Log("KAT install complete.");
+						Debug.Log("KAT removal complete.");
 					}
 				}
 			}
@@ -171,7 +171,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
 						Debug.LogError("KAT animator removal failed.");
 					} else {
-						Debug.Log("KAT animator install complete.");
+						Debug.Log("KAT animator removal complete.");
 					}
 				}
 			}
@@ -206,7 +206,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
 						Debug.LogError("KAT expression parameters removal failed.");
 					} else {
-						Debug.Log("KAT expression parameters install complete.");
+						Debug.Log("KAT expression parameters removal complete.");
 					}
 				}
 			}
@@ -226,7 +226,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
 						Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
 					}
-					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint)) {
+					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint, installKeyboard != 0 ? true : false)) {
 						Debug.LogError("KAT avatar parts install failed.");
 					} else {
 						Debug.Log("KAT avatar parts install complete.");
@@ -241,7 +241,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
 						Debug.LogError("KAT avatar parts removal failed.");
 					} else {
-						Debug.Log("KAT avatar parts install complete.");
+						Debug.Log("KAT avatar parts removal complete.");
 					}
 				}
 			}
@@ -252,7 +252,7 @@ namespace KillFrenzy.AvatarTextTools
 			EditorGUILayout.Space();
 
 			EditorGUILayout.LabelField("Include In-game keyboard");
-			attachmentPoint = EditorGUILayout.Popup(installKeyboard, new string[2] {
+			installKeyboard = EditorGUILayout.Popup(installKeyboard, new string[2] {
 				"No",
 				"Yes"
 			});

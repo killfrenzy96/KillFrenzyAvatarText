@@ -43,6 +43,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			});
 
 			parameters.Add(new ExpressionParameter() {
+				name = KatSettings.ParamKeyboardPrefix,
+				valueType = ExpressionParameters.ValueType.Bool,
+				defaultValue = 0,
+				saved = false
+			});
+
+			parameters.Add(new ExpressionParameter() {
 				name = KatSettings.ParamTextPointer,
 				valueType = ExpressionParameters.ValueType.Int,
 				defaultValue = 0,
@@ -71,6 +78,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				ExpressionParameter parameter = targetParameters.parameters[i];
 				if (
 					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
+					parameter.name.StartsWith(KatSettings.ParamKeyboardPrefix) ||
 					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
 					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {

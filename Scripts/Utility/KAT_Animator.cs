@@ -22,8 +22,13 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 
+using System.Collections.Generic;
+
 using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
+
+using Driver = VRC.SDK3.Avatars.Components.VRCAvatarParameterDriver;
+using DriverParameter = VRC.SDKBase.VRC_AvatarParameterDriver.Parameter;
 
 using KillFrenzy.AvatarTextTools.Settings;
 
@@ -44,16 +49,23 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			// Add parameters
+			// controller.AddParameter("IsLocal", AnimatorControllerParameterType.Bool);
 			controller.AddParameter(KatSettings.ParamTextVisible, AnimatorControllerParameterType.Bool);
 			controller.AddParameter(KatSettings.ParamKeyboardPrefix, AnimatorControllerParameterType.Bool);
 			controller.AddParameter(KatSettings.ParamTextPointer, AnimatorControllerParameterType.Int);
+
+			if (installKeyboard) {
+				for (int i = 0; i < KatSettings.KeyboardKeysCount; i++) {
+					controller.AddParameter(KatSettings.ParamKeyboardPressed + i.ToString(), AnimatorControllerParameterType.Float);
+				}
+			}
 
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
 				controller.AddParameter(KatSettings.ParamTextSyncPrefix + i.ToString(), AnimatorControllerParameterType.Float);
 			}
 
 			// Add Layers
-			controller.AddLayer(CreateToggleLayer(controller, animationDisable, animationEnable));
+			controller.AddLayer(CreateToggleLayer(controller, animationDisable, animationEnable, installKeyboard));
 
 			if (installKeyboard) {
 				controller.AddLayer(CreateKeyboardLayer(controller));
@@ -77,6 +89,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				if (
 					layer.name.StartsWith(KatSettings.ParamTextVisible) ||
 					layer.name.StartsWith(KatSettings.ParamKeyboardPrefix) ||
+					layer.name.StartsWith(KatSettings.ParamKeyboardPressed) ||
 					layer.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {
 					// Remove Blend Trees
@@ -95,6 +108,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				if (
 					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
 					parameter.name.StartsWith(KatSettings.ParamKeyboardPrefix) ||
+					parameter.name.StartsWith(KatSettings.ParamKeyboardPressed) ||
 					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
 					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {
@@ -144,7 +158,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return orderedAnimationClips;
 		}
 
-		private static AnimatorControllerLayer CreateToggleLayer(AnimatorController controller, AnimationClip animationDisable, AnimationClip animationEnable)
+		private static AnimatorControllerLayer CreateToggleLayer(AnimatorController controller, AnimationClip animationDisable, AnimationClip animationEnable, bool installKeyboard)
 		{
 			AnimatorControllerLayer layer = new AnimatorControllerLayer();
 			AnimatorStateMachine stateMachine;
@@ -176,6 +190,15 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			disabledTransition.destinationState = stateDisabled;
 			disabledTransition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
 			disabledTransition.duration = 0;
+
+			if (installKeyboard) {
+				disabledTransition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
+
+				AnimatorStateTransition enableTransition2 = stateDisabled.AddExitTransition(false);
+				enableTransition2.destinationState = stateEnabled;
+				enableTransition2.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+				enableTransition2.duration = 0;
+			}
 
 			return layer;
 		}
@@ -249,10 +272,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				if (installKeyboard) {
 					AnimatorStateTransition altStartTransition = stateStandby.AddExitTransition(false);
 					altStartTransition.destinationState = statePointerChar;
-					altStartTransition.AddCondition(AnimatorConditionMode.Equals, KatSettings.PointerAltSyncOffset + charIndex, KatSettings.ParamTextPointer);
+					altStartTransition.AddCondition(AnimatorConditionMode.Equals, KatSettings.PointerAltSyncOffset + charIndex + 1, KatSettings.ParamTextPointer);
 					altStartTransition.duration = 0;
 
-					pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, KatSettings.PointerAltSyncOffset + charIndex, KatSettings.ParamTextPointer);
+					pointerReturnTransition.AddCondition(AnimatorConditionMode.NotEqual, KatSettings.PointerAltSyncOffset + charIndex + 1, KatSettings.ParamTextPointer);
 				}
 			}
 
@@ -279,10 +302,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 		private static AnimatorControllerLayer CreateKeyboardLayer(AnimatorController controller)
 		{
-			AnimationClip animationKeyboardDisabled = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "Keyboard_Disabled");
-			AnimationClip animationKeyboardEnabled = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "Keyboard_Enabled");
+			AnimationClip animationKeyboardDisable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Disable");
+			AnimationClip animationKeyboardEnable = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Enable");
+			AnimationClip animationKeyboardInit = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Init");
 
-			if (animationKeyboardDisabled == null || animationKeyboardEnabled == null) {
+			if (animationKeyboardDisable == null || animationKeyboardEnable == null || animationKeyboardInit == null) {
 				Debug.LogError("Failed: Resources/" + KatSettings.CharacterAnimationFolder + " is missing keyboard animations.");
 				return null;
 			}
@@ -298,7 +322,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			// Default state
 			AnimatorState stateDisabled = stateMachine.AddState("Disabled", new Vector3(300f, 200f, 0f));
-			stateDisabled.motion = animationKeyboardDisabled;
+			stateDisabled.motion = animationKeyboardDisable;
 			stateDisabled.writeDefaultValues = false;
 			stateDisabled.speed = 0f;
 
@@ -306,28 +330,141 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			disabledTransition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
 			disabledTransition.duration = 0;
 
+			// Init state - initializes keyboard
+			AnimatorState stateInit = stateMachine.AddState("Init", new Vector3(300f, 400f, 0f));
+			stateInit.motion = animationKeyboardInit;
+			stateInit.writeDefaultValues = false;
+
+			AnimatorStateTransition initTransition = stateDisabled.AddExitTransition(false);
+			initTransition.destinationState = stateInit;
+			initTransition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+			initTransition.duration = 0;
+
+			Driver driverInit = stateInit.AddStateMachineBehaviour<Driver>();
+			driverInit.localOnly = true;
+			driverInit.parameters = new List<DriverParameter>();
+
+			DriverParameter driverStateInit = new DriverParameter();
+			driverStateInit.name = KatSettings.ParamTextPointer;
+			driverStateInit.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverStateInit.value = KatSettings.PointerAltSyncOffset;
+			driverInit.parameters.Add(driverStateInit);
+
 			// Standby state - waits for updates to the pointer
 			AnimatorState stateStandby = stateMachine.AddState("StandBy", new Vector3(300f, 500f, 0f));
-			stateStandby.motion = animationKeyboardEnabled;
+			stateStandby.motion = animationKeyboardEnable;
 			stateStandby.writeDefaultValues = false;
 			stateStandby.speed = 0f;
 
-			AnimatorStateTransition enabledTransition = stateDisabled.AddExitTransition(false);
+			AnimatorStateTransition enabledTransition = stateInit.AddExitTransition(false);
 			enabledTransition.destinationState = stateStandby;
 			enabledTransition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
 			enabledTransition.duration = 0;
+			enabledTransition.hasExitTime = true;
+			enabledTransition.exitTime = 0.1f;
 
-			// Create keyboard paramater driver states
+			// Fix Pointer - places pointer within offset if out of range
+			AnimatorState stateFix = stateMachine.AddState("Fix Pointer", new Vector3(0f, 500f, 0f));
+			// stateFix.motion = animationKeyboardEnable;
+			stateFix.writeDefaultValues = false;
+			stateFix.speed = 0f;
+
+			AnimatorStateTransition stateFixEnter1 = stateStandby.AddExitTransition(false);
+			stateFixEnter1.destinationState = stateFix;
+			stateFixEnter1.AddCondition(AnimatorConditionMode.Greater, KatSettings.PointerAltSyncOffset + KatSettings.TextLength + 1, KatSettings.ParamTextPointer);
+			stateFixEnter1.duration = 0;
+
+			AnimatorStateTransition stateFixEnter2 = stateStandby.AddExitTransition(false);
+			stateFixEnter2.destinationState = stateFix;
+			stateFixEnter2.AddCondition(AnimatorConditionMode.Less, KatSettings.PointerAltSyncOffset, KatSettings.ParamTextPointer);
+			stateFixEnter2.duration = 0;
+
+			AnimatorStateTransition stateFixExit = stateFix.AddExitTransition(false);
+			stateFixExit.destinationState = stateStandby;
+			stateFixExit.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+			stateFixExit.duration = 0;
+
+			Driver driverFix = stateFix.AddStateMachineBehaviour<Driver>();
+			driverFix.localOnly = true;
+			driverFix.parameters = new List<DriverParameter>();
+
+			DriverParameter driverParameterFix = new DriverParameter();
+			driverParameterFix.name = KatSettings.ParamTextPointer;
+			driverParameterFix.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverParameterFix.value = KatSettings.PointerAltSyncOffset;
+			driverFix.parameters.Add(driverParameterFix);
+
+			// Create keyboard presses
 			for (int i = 0; i < KatSettings.KeyboardKeysCount; i++) {
-				int charIndex = i;
+				int key = i;
+				string keyString = key.ToString();
+				float positionY = 500f + 50f * i;
 
-				float pointerPosOffsetY = 500f + 50f * i;
+				AnimatorState stateKeyPress = stateMachine.AddState("Key" + keyString, new Vector3(600f, positionY, 0f));
+				// stateKeyPress.motion = animationKeyboardEnable;
+				stateKeyPress.writeDefaultValues = false;
+				stateKeyPress.speed = 1f;
 
-				AnimatorState stateChar = stateMachine.AddState("Char" + charIndex, new Vector3(800f, pointerPosOffsetY, 0f));
-				stateChar.motion = animationKeyboardEnabled;
-				stateChar.writeDefaultValues = false;
-				stateChar.speed = 0f;
+				AnimatorStateTransition stateKeyDown = stateStandby.AddExitTransition(false);
+				stateKeyDown.destinationState = stateKeyPress;
+				stateKeyDown.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressed + keyString);
+				stateKeyDown.duration = 0;
+
+				AnimatorStateTransition stateKeyUp = stateKeyPress.AddExitTransition(false);
+				stateKeyUp.destinationState = stateStandby;
+				stateKeyUp.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressed + keyString);
+				stateKeyUp.duration = 0;
+				// stateKeyUp.hasExitTime = true;
+				// stateKeyUp.exitTime = 0.2f;
+
+				Driver driver = stateKeyPress.AddStateMachineBehaviour<Driver>();
+				driver.localOnly = true;
+				driver.parameters = new List<DriverParameter>();
+
+				DriverParameter driverParameterPointer = new DriverParameter();
+				driverParameterPointer.name = KatSettings.ParamTextPointer;
+				driverParameterPointer.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Add;
+				driverParameterPointer.value = 1;
+				driver.parameters.Add(driverParameterPointer);
+
+				for (int j = 0; j < KatSettings.SyncParamsSize; j++) {
+					DriverParameter driverParameterChar = new DriverParameter();
+					driverParameterChar.name = KatSettings.ParamTextSyncPrefix + j.ToString();
+					driverParameterChar.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+					driverParameterChar.value = ConvertKeyToFloat(key);
+					driver.parameters.Add(driverParameterChar);
+				}
 			}
+
+			// Create clear key
+			/*AnimatorState stateClearKey = stateMachine.AddState("Clear Key", new Vector3(0f, 500f, 0f));
+			stateClearKey.motion = animationKeyboardEnable;
+			stateClearKey.writeDefaultValues = false;
+			stateClearKey.speed = 0f;
+
+			AnimatorStateTransition stateClearPressed = stateStandby.AddExitTransition(false);
+			stateClearPressed.destinationState = stateClearKey;
+			stateClearPressed.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressed + "Clear");
+			stateClearPressed.duration = 0;
+
+			AnimatorStateTransition stateClearPressedReturn = stateClearKey.AddExitTransition(false);
+			stateClearPressedReturn.destinationState = stateStandby;
+			stateClearPressedReturn.AddCondition(AnimatorConditionMode.Less, 0.05f, KatSettings.ParamKeyboardPressed);
+			stateClearPressedReturn.duration = 0;
+
+			Driver driverClearKey = stateClearKey.AddStateMachineBehaviour<Driver>();
+			driverClearKey.localOnly = true;
+			driverClearKey.parameters = new List<DriverParameter>();
+
+			DriverParameter driverParameterClearKey = new DriverParameter();
+			driverParameterClearKey.name = KatSettings.ParamTextPointer;
+			driverParameterClearKey.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverParameterClearKey.value = 255;
+			driverClearKey.parameters.Add(driverParameterClearKey);*/
+
+			// Create backspace state
+
+			// Create
 
 			return layer;
 		}

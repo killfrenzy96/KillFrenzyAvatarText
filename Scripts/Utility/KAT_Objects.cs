@@ -18,6 +18,7 @@
 
 #if UNITY_EDITOR
 
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -30,13 +31,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatObjectsInstaller
 	{
-		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint = KatAttachmentPoint.Head)
+		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint, bool installKeyboard)
 		{
 			Material textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");;
 			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform avatarAttachmentTransform = null;
 			Vector3 avatarAttachmentOffset = new Vector3(0.0f, 1.0f, 0.4f);
-
 
 			switch (attachmentPoint) {
 				case KatAttachmentPoint.Head: {
@@ -60,8 +60,37 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			if (textMaterial == null) {
-				Debug.LogWarning("Error: Material for Text not found.");
+				Debug.LogError("Error: Material for Text not found.");
 				return false;
+			}
+
+			GameObject keyboardObject = null;
+			if (installKeyboard) {
+				Object keyboardPrefab = Resources.Load<GameObject>("KAT_Misc/KillFrenzyAvatarKeyboard");
+				if (keyboardPrefab == null) {
+					Debug.LogError("Error: Prefab for keyboard not found.");
+					return false;
+				}
+
+				keyboardObject = (GameObject)PrefabUtility.InstantiatePrefab(keyboardPrefab, avatarRootTransform);
+				keyboardObject.SetActive(false);
+
+				try {
+					Transform avatarChest = FindAvatarChest(avatarRootTransform);
+
+					GameObject constraintAttachment = new GameObject("KAT_Keyboard_AttachmentPoint");
+					constraintAttachment.transform.SetParent(avatarChest);
+					constraintAttachment.transform.localPosition = new Vector3(-0.0f, 0.0f, 0.4f) / Vector3.Magnitude(constraintAttachment.transform.localPosition);
+
+					Transform keyboardConstraintTransform = FindTransformRecursive(keyboardObject.transform, "ConstraintChild");
+					ParentConstraint parentConstraint = keyboardConstraintTransform.gameObject.GetComponent<ParentConstraint>();
+					ConstraintSource constraintSource = parentConstraint.GetSource(0);
+					constraintSource.sourceTransform = constraintAttachment.transform;
+					parentConstraint.SetSource(0, constraintSource);
+				} catch {
+
+					Debug.LogWarning("Warning: Could not attach keyboard 'ConstraintChild' to 'KAT_Keyboard_AttachmentPoint'.");
+				}
 			}
 
 			GameObject katObject = new GameObject("KillFrenzyAvatarText");
@@ -74,21 +103,44 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			ParentConstraint constraint = constraintObject.AddComponent<ParentConstraint>();
 			constraint.locked = true;
 			if (avatarAttachmentTransform != null) {
+				GameObject constraintAttachment = new GameObject("KAT_AttachmentPoint");
+				constraintAttachment.transform.SetParent(avatarAttachmentTransform);
+				constraintAttachment.transform.localPosition = avatarAttachmentOffset / Vector3.Magnitude(constraintAttachment.transform.localScale);
+
 				ConstraintSource constraintSource = new ConstraintSource();
-				constraintSource.sourceTransform = avatarAttachmentTransform;
+				constraintSource.sourceTransform = constraintAttachment.transform;
 				constraintSource.weight = 1f;
 				constraint.AddSource(constraintSource);
-				constraint.constraintActive = true;
 
 				if (attachmentPoint == KatAttachmentPoint.Chest) {
-					constraint.rotationAxis = Axis.Y | Axis.Z;
+					constraint.rotationAxis = Axis.Y;
 				}
+
+				if (installKeyboard) {
+					Transform avatarChest = FindAvatarChest(avatarRootTransform);
+
+					if (avatarChest == null) {
+						Debug.LogWarning("Warning: Avatar chest not found.");
+					} else {
+						Transform constraintKeyboardAttachment = FindTransformRecursive(keyboardObject.transform, "KeyboardText_AttachmentPoint");
+						if (constraintKeyboardAttachment == null) {
+							Debug.Log(keyboardObject);
+							Debug.LogWarning("Warning: Prefab for keyboard does not contain 'KeyboardText_AttachmentPoint'.");
+						} else {
+							ConstraintSource constraintSource2 = new ConstraintSource();
+							constraintSource2.sourceTransform = constraintKeyboardAttachment;
+							constraintSource2.weight = 0f;
+							constraint.AddSource(constraintSource2);
+						}
+					}
+				}
+
+				constraint.constraintActive = true;
 			}
 
 			GameObject textObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			textObject.name = "Text";
 			textObject.transform.SetParent(constraintObject.transform);
-			textObject.transform.localPosition = avatarAttachmentOffset;
 			textObject.transform.localScale = new Vector3(0.5f, 1f / 6f, 1.0f);
 
 			GameObject.DestroyImmediate(textObject.GetComponent<MeshCollider>());
@@ -104,6 +156,17 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			Transform avatarRootTransform = avatar.gameObject.transform;
 			Transform katObjectTransform = avatarRootTransform.transform.Find("KillFrenzyAvatarText");
 			if (katObjectTransform) {
+				// Remove constraint target
+				try {
+					Transform katConstraintTransform = katObjectTransform.transform.Find("Constraint");
+					ParentConstraint constraint = katConstraintTransform.GetComponent<ParentConstraint>();
+					ConstraintSource constraintSource = constraint.GetSource(0);
+					if (constraintSource.sourceTransform.gameObject.name == "KAT_AttachmentPoint") {
+						GameObject.DestroyImmediate(constraintSource.sourceTransform.gameObject);
+					}
+				} catch {}
+
+				// Remove parent object
 				try {
 					GameObject.DestroyImmediate(katObjectTransform.gameObject);
 				} catch {
@@ -111,6 +174,28 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					return false;
 				}
 			}
+
+			Transform keyboardObjectTransform = avatarRootTransform.transform.Find("KillFrenzyAvatarKeyboard");
+			if (keyboardObjectTransform) {
+				// Remove constraint target
+				try {
+					Transform keyboardConstraintTransform = FindTransformRecursive(keyboardObjectTransform, "ConstraintChild");
+					ParentConstraint constraint = keyboardConstraintTransform.GetComponent<ParentConstraint>();
+					ConstraintSource constraintSource = constraint.GetSource(0);
+					if (constraintSource.sourceTransform.gameObject.name == "KAT_Keyboard_AttachmentPoint") {
+						GameObject.DestroyImmediate(constraintSource.sourceTransform.gameObject);
+					}
+				} catch {}
+
+				// Remove parent object
+				try {
+					GameObject.DestroyImmediate(keyboardObjectTransform.gameObject);
+				} catch {
+					Debug.LogWarning("Warning: Unable to destroy the KillFrenzyAvatarKeyboard object.");
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -141,7 +226,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		private static Transform FindTransformRecursive(Transform transform, string name)
 		{
 			foreach (Transform child in transform) {
-				if (child.name.ToLower().Contains(name)) {
+				if (child.name.ToLower().Contains(name.ToLower())) {
 					return child;
 				} else {
 					Transform found = FindTransformRecursive(child, name);
