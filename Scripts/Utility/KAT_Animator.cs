@@ -222,6 +222,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorStateTransition disabledTransition = stateMachine.AddAnyStateTransition(stateDisabled);
 			disabledTransition.AddCondition(AnimatorConditionMode.Equals, 0, KatSettings.ParamTextPointer);
 			disabledTransition.duration = 0;
+			disabledTransition.canTransitionToSelf = false;
 
 			// Standby state - waits for updates to the pointer
 			AnimatorState stateStandby = stateMachine.AddState("StandBy", new Vector3(300f, 500f, 0f));
@@ -329,6 +330,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorStateTransition disabledTransition = stateMachine.AddAnyStateTransition(stateDisabled);
 			disabledTransition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
 			disabledTransition.duration = 0;
+			disabledTransition.canTransitionToSelf = false;
 
 			// Init state - initializes keyboard
 			AnimatorState stateInit = stateMachine.AddState("Init", new Vector3(300f, 400f, 0f));
@@ -403,7 +405,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				AnimatorState stateKeyPress = stateMachine.AddState("Key" + keyString, new Vector3(600f, positionY, 0f));
 				// stateKeyPress.motion = animationKeyboardEnable;
 				stateKeyPress.writeDefaultValues = false;
-				stateKeyPress.speed = 1f;
+				stateKeyPress.speed = 0f;
 
 				AnimatorStateTransition stateKeyDown = stateStandby.AddExitTransition(false);
 				stateKeyDown.destinationState = stateKeyPress;
