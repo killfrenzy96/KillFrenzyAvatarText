@@ -23,6 +23,16 @@ MonoBehaviour:
     subMenu: {fileID: 0}
     subParameters: []
     labels: []
+  - name: KAT Keyboard
+    icon: {fileID: 0}
+    type: 102
+    parameter:
+      name: KAT_Keyboard
+    value: 1
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters: []
+    labels: []
   - name: KAT Pointer Position 1
     icon: {fileID: 0}
     type: 102
@@ -59,16 +69,6 @@ MonoBehaviour:
     parameter:
       name: KAT_Pointer
     value: 4
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters: []
-    labels: []
-  - name: KAT Pointer Position 5
-    icon: {fileID: 0}
-    type: 102
-    parameter:
-      name: KAT_Pointer
-    value: 5
     style: 0
     subMenu: {fileID: 0}
     subParameters: []

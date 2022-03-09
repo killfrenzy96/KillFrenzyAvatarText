@@ -18,10 +18,10 @@
 
 #if UNITY_EDITOR
 
-using System;
 using UnityEngine;
-using UnityEngine.Animations;
 using UnityEditor;
+
+using System.Collections.Generic;
 
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 
@@ -29,6 +29,8 @@ using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
 using ExpressionParameter = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters.Parameter;
 using ExpressionsMenu = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu;
+using Control = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control;
+using ControlParameter = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu.Control.Parameter;
 
 using KillFrenzy.AvatarTextTools.Settings;
 
@@ -105,19 +107,34 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				AssetDatabase.CreateAsset(expressionParameters, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_ExpressionParameters_" + System.Guid.NewGuid().ToString() + ".asset");
 			}
 
-			// No menu found, insert default menu
+			// No menu found, create new menu
 			if (!expressionsMenu) {
-				expressionsMenu = Resources.Load<ExpressionsMenu>("KAT_Misc/DefaultEmotes");
-				if (expressionsMenu) {
-					avatarDescriptor.expressionsMenu = expressionsMenu;
-				} else {
-					Debug.LogWarning("Warning: Could not insert default expressions menu.");
-					Debug.Log(expressionsMenu);
-				}
+				ExpressionsMenu expressionsEmotes = Resources.Load<ExpressionsMenu>("KAT_Misc/DefaultEmotes");
+				// if (expressionsMenu) {
+				// 	avatarDescriptor.expressionsMenu = expressionsMenu;
+				// } else {
+				// 	Debug.LogWarning("Warning: Could not insert default expressions menu.");
+				// 	Debug.Log(expressionsMenu);
+				// }
+
+				expressionsMenu = new ExpressionsMenu();
+				avatarDescriptor.expressionsMenu = expressionsMenu;
+				avatarDescriptor.customExpressions = true;
+				expressionsMenu.controls = new List<ExpressionsMenu.Control>();
+
+				Control control = new Control();
+				control.name = "Emotes";
+				control.subMenu = expressionsEmotes;
+				control.type = Control.ControlType.SubMenu;
+				expressionsMenu.controls.Add(control);
+
+				CreateOutputFolder();
+				AssetDatabase.CreateAsset(expressionsMenu, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_ExpressionMenu_" + System.Guid.NewGuid().ToString() + ".asset");
 			}
 
 			if (
 				KatAnimatorInstaller.InstallToAnimator(animatorControllerFx, installKeyboard) &&
+				KatMenuInstaller.InstallToMenu(expressionsMenu, installKeyboard) &&
 				KatParametersInstaller.InstallToParameters(expressionParameters, installKeyboard) &&
 				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint, installKeyboard)
 			) {
@@ -130,6 +147,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		public static bool RemoveFromAvatar(VRCAvatarDescriptor avatarDescriptor)
 		{
 			AnimatorController animatorControllerFx = null;
+			ExpressionsMenu expressionsMenu = avatarDescriptor.expressionsMenu;
 			ExpressionParameters expressionParameters = avatarDescriptor.expressionParameters;
 
 			foreach (VRCAvatarDescriptor.CustomAnimLayer animLayer in avatarDescriptor.baseAnimationLayers) {
@@ -143,6 +161,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			if (animatorControllerFx != null) {
 				KatAnimatorInstaller.RemoveFromAnimator(animatorControllerFx);
+			}
+
+			if (expressionsMenu != null) {
+				KatMenuInstaller.RemoveFromMenu(expressionsMenu);
 			}
 
 			if (expressionParameters != null) {

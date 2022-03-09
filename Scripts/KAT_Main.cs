@@ -22,6 +22,7 @@ using UnityEngine;
 using UnityEditor;
 
 using AnimatorController = UnityEditor.Animations.AnimatorController;
+using ExpressionsMenu = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionsMenu;
 using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
 using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
 
@@ -34,6 +35,7 @@ namespace KillFrenzy.AvatarTextTools
 	public class KillFrenzyAvatarText : EditorWindow
 	{
 		private AnimatorController targetController = null;
+		private ExpressionsMenu targetMenu = null;
 		private ExpressionParameters targetParameters = null;
 		private VRCAvatarDescriptor targetAvatar = null;
 		private int attachmentPoint = KatAttachmentPoint.Chest;
@@ -172,6 +174,41 @@ namespace KillFrenzy.AvatarTextTools
 						Debug.LogError("KAT animator removal failed.");
 					} else {
 						Debug.Log("KAT animator removal complete.");
+					}
+				}
+			}
+
+			EditorGUILayout.Space();
+
+			// Menu installer
+			EditorGUILayout.LabelField("Install to Expressions Menu", subtitleStyle);
+
+			targetMenu = EditorGUILayout.ObjectField("Expressions Menu", targetMenu, typeof(ExpressionsMenu), true) as ExpressionsMenu;
+			EditorGUILayout.Space();
+
+			if (GUILayout.Button("Install/Update KAT expressions menu")) {
+				if (targetMenu == null) {
+					Debug.LogError("Failed: No expressions menu has been selected.");
+				} else {
+					if (!KatMenuInstaller.RemoveFromMenu(targetMenu)) {
+						Debug.LogWarning("Warning: KAT expressions menu removal failed. This is done before installation.");
+					}
+					if (!KatMenuInstaller.InstallToMenu(targetMenu, installKeyboard != 0 ? true : false)) {
+						Debug.LogError("KAT expressions menu install failed.");
+					} else {
+						Debug.Log("KAT expressions menu install complete.");
+					}
+				}
+			}
+
+			if (GUILayout.Button("Remove KAT expressions menu")) {
+				if (targetMenu == null) {
+					Debug.LogError("Failed: No expressions menu has been selected.");
+				} else {
+					if (!KatMenuInstaller.RemoveFromMenu(targetMenu)) {
+						Debug.LogError("KAT expressions menu removal failed.");
+					} else {
+						Debug.Log("KAT expressions menu removal complete.");
 					}
 				}
 			}
