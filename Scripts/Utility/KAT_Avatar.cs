@@ -118,7 +118,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			if (
 				KatAnimatorInstaller.InstallToAnimator(animatorControllerFx, installKeyboard) &&
-				KatParametersInstaller.InstallToParameters(expressionParameters) &&
+				KatParametersInstaller.InstallToParameters(expressionParameters, installKeyboard) &&
 				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint, installKeyboard)
 			) {
 				return true;

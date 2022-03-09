@@ -28,6 +28,12 @@ namespace KillFrenzy.AvatarTextTools.Settings
 
 		public const string ParamKeyboardPrefix = "KAT_Keyboard";
 		public const string ParamKeyboardPressed = "KAT_KeyboardPressed";
+		public const string ParamKeyboardPressedClear = ParamKeyboardPressed + "Clear";
+		public const string ParamKeyboardPressedBackspace = ParamKeyboardPressed + "Bksp";
+		public const string ParamKeyboardPressedCaps = ParamKeyboardPressed + "Caps";
+		public const string ParamKeyboardPressedShiftL = ParamKeyboardPressed + "ShiftL";
+		public const string ParamKeyboardPressedShiftR = ParamKeyboardPressed + "ShiftR";
+		public const float KeyboardBackspaceMode = 97f / 256f;
 		public const int KeyboardKeysCount = 96;
 
 		public const string CharacterAnimationFolder = "KAT_CharAnimations/";
@@ -38,6 +44,9 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const int PointerAltSyncOffset = 100;
 
 		public const string GeneratedOutputFolderName = "KAT_GeneratedOutput";
+
+		public const string TextAttachmentPointName = "KAT_Text_AttachmentPoint";
+		public const string KeyboardAttachmentPointName = "KAT_Keyboard_AttachmentPoint";
 	}
 
 	public static class KatAttachmentPoint

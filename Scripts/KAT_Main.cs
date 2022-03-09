@@ -191,7 +191,7 @@ namespace KillFrenzy.AvatarTextTools
 					if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
 						Debug.LogWarning("Warning: KAT expression parameters removal failed. This is done before installation.");
 					}
-					if (!KatParametersInstaller.InstallToParameters(targetParameters)) {
+					if (!KatParametersInstaller.InstallToParameters(targetParameters, installKeyboard != 0 ? true : false)) {
 						Debug.LogError("KAT expression parameters install failed.");
 					} else {
 						Debug.Log("KAT expression parameters install complete.");

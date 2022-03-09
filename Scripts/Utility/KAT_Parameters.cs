@@ -30,7 +30,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatParametersInstaller
 	{
-		public static bool InstallToParameters(ExpressionParameters targetParameters)
+		public static bool InstallToParameters(ExpressionParameters targetParameters, bool installKeyboard)
 		{
 			List<ExpressionParameter> parameters = new List<ExpressionParameter>();
 			parameters.AddRange(targetParameters.parameters);
@@ -42,12 +42,14 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				saved = false
 			});
 
-			parameters.Add(new ExpressionParameter() {
-				name = KatSettings.ParamKeyboardPrefix,
-				valueType = ExpressionParameters.ValueType.Bool,
-				defaultValue = 0,
-				saved = false
-			});
+			if (installKeyboard) {
+				parameters.Add(new ExpressionParameter() {
+					name = KatSettings.ParamKeyboardPrefix,
+					valueType = ExpressionParameters.ValueType.Bool,
+					defaultValue = 0,
+					saved = false
+				});
+			}
 
 			parameters.Add(new ExpressionParameter() {
 				name = KatSettings.ParamTextPointer,
