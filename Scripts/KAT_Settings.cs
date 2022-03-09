@@ -28,6 +28,8 @@ namespace KillFrenzy.AvatarTextTools.Settings
 
 		public const string ParamKeyboardPrefix = "KAT_Keyboard";
 		public const string ParamKeyboardPressed = "KAT_KeyboardPressed";
+		public const string ParamKeyboardShift = "KAT_KeyboardShift";
+		public const string ParamKeyboardProximity = "KAT_KeyboardProximity";
 		public const string ParamKeyboardPressedClear = ParamKeyboardPressed + "Clear";
 		public const string ParamKeyboardPressedBackspace = ParamKeyboardPressed + "Bksp";
 		public const string ParamKeyboardPressedCaps = ParamKeyboardPressed + "Caps";
