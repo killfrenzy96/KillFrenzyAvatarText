@@ -1,9 +1,11 @@
 # KillFrenzy Avatar Text (KAT)
 A text display system designed to be used on VRChat Avatars. This takes advantage of the new OSC (Open Sound Protocol) system that lets other programs interact with your VRChat avatar.
 
+![Demonstration](/Images/KAT_Demonstration.gif)
+
 An in-game keyboard is now also included using VRChat Avatar Dynamics. You can type with an OSC app, or use the in-game keyboard. (Keep in mind you can't use the in-game keyboard while the OSC app is open).
 
-![KeyboardDemonstration](/Images/KAT_Keyboard_Demonstration.gif) ![Demonstration](/Images/KAT_Demonstration.gif)
+![KeyboardDemonstration](/Images/KAT_Keyboard_Demonstration.gif)
 
 # Recommended OSC apps
 You will need an app to write avatar text using VRChat OSC.
