@@ -55,9 +55,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			if (installKeyboard) {
 				controller.AddParameter(KatSettings.ParamKeyboardPrefix, AnimatorControllerParameterType.Bool);
 				controller.AddParameter(KatSettings.ParamKeyboardProximity, AnimatorControllerParameterType.Float);
+				controller.AddParameter(KatSettings.ParamKeyboardProximityExit, AnimatorControllerParameterType.Float);
+				controller.AddParameter(KatSettings.ParamKeyboardHighlight, AnimatorControllerParameterType.Float);
 				controller.AddParameter(KatSettings.ParamKeyboardPressedClear, AnimatorControllerParameterType.Float);
 				controller.AddParameter(KatSettings.ParamKeyboardPressedBackspace, AnimatorControllerParameterType.Float);
-				controller.AddParameter(KatSettings.ParamKeyboardPressedCaps, AnimatorControllerParameterType.Float);
 				controller.AddParameter(KatSettings.ParamKeyboardPressedShiftL, AnimatorControllerParameterType.Float);
 				controller.AddParameter(KatSettings.ParamKeyboardPressedShiftR, AnimatorControllerParameterType.Float);
 
@@ -77,6 +78,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				controller.AddLayer(CreateKeyboardLayer(controller, animations));
 				controller.AddLayer(CreateKeyboardProximityLayer(controller, animations));
 				controller.AddLayer(CreateKeyboardShiftLayer(controller, animations));
+				controller.AddLayer(CreateKeyboardHighlightLayer(controller, animations));
 			}
 
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
@@ -97,8 +99,6 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				if (
 					layer.name.StartsWith(KatSettings.ParamTextVisible) ||
 					layer.name.StartsWith(KatSettings.ParamKeyboardPrefix) ||
-					layer.name.StartsWith(KatSettings.ParamKeyboardPressed) ||
-					layer.name.StartsWith(KatSettings.ParamKeyboardShift) ||
 					layer.name.StartsWith(KatSettings.ParamTextSyncPrefix)
 				) {
 					// Remove Blend Trees
@@ -275,8 +275,14 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			DriverParameter driverStateInit1 = new DriverParameter();
 			driverStateInit1.name = KatSettings.ParamTextPointer;
 			driverStateInit1.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
-			driverStateInit1.value = KatSettings.PointerAltSyncOffset;
+			driverStateInit1.value = 255;
 			driverInit.parameters.Add(driverStateInit1);
+
+			DriverParameter driverStateInit2 = new DriverParameter();
+			driverStateInit2.name = KatSettings.ParamKeyboardHighlight;
+			driverStateInit2.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverStateInit2.value = ConvertKeyToFloat(100);
+			driverInit.parameters.Add(driverStateInit2);
 
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
 				DriverParameter driverParameterChar = new DriverParameter();
@@ -291,7 +297,17 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorStateTransition transitionEnabled = CreateTransition(stateInit, stateStandby);
 			transitionEnabled.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
 			transitionEnabled.hasExitTime = true;
-			transitionEnabled.exitTime = 0.1f;
+			transitionEnabled.exitTime = 0.2f;
+
+			Driver driverStandBy = stateStandby.AddStateMachineBehaviour<Driver>();
+			driverStandBy.localOnly = true;
+			driverStandBy.parameters = new List<DriverParameter>();
+
+			DriverParameter driverResetHighlight = new DriverParameter();
+			driverResetHighlight.name = KatSettings.ParamKeyboardHighlight;
+			driverResetHighlight.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverResetHighlight.value = ConvertKeyToFloat(100);
+			driverStandBy.parameters.Add(driverResetHighlight);
 
 			// App active state - app is active, disable keyboard input
 			AnimatorState stateAppActive = CreateState(stateMachine, "App Active", new Vector3(600f, 400f, 0f), animations.keyboardEnable);
@@ -304,8 +320,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorState stateFix = CreateState(stateMachine, "Fix Pointer", new Vector3(0f, 500f, 0f), animations.nothing);
 			AnimatorStateTransition transitionFixEnter1 = CreateTransition(stateStandby, stateFix);
 			transitionFixEnter1.AddCondition(AnimatorConditionMode.Greater, KatSettings.PointerAltSyncOffset + KatSettings.TextLength + 1, KatSettings.ParamTextPointer);
+			transitionFixEnter1.duration = 0.2f;
+			transitionFixEnter1.hasFixedDuration = true;
 			AnimatorStateTransition transitionFixEnter2 = CreateTransition(stateStandby, stateFix);
 			transitionFixEnter2.AddCondition(AnimatorConditionMode.Less, KatSettings.PointerAltSyncOffset, KatSettings.ParamTextPointer);
+			transitionFixEnter2.duration = 0.2f;
+			transitionFixEnter2.hasFixedDuration = true;
 			AnimatorStateTransition transitionFixExit = CreateTransition(stateFix, stateStandby);
 			transitionFixExit.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
 
@@ -328,6 +348,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				AnimatorState stateKeyPress = CreateState(stateMachine, "Key" + keyString, new Vector3(600f, positionY, 0f), animations.nothing);
 				AnimatorStateTransition transitionKeyDown = CreateTransition(stateStandby, stateKeyPress);
 				transitionKeyDown.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressed + keyString);
+				transitionKeyDown.duration = 0.2f;
+				transitionKeyDown.hasFixedDuration = true;
 				AnimatorStateTransition transitionKeyUp = CreateTransition(stateKeyPress, stateStandby);
 				transitionKeyUp.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressed + keyString);
 
@@ -340,6 +362,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				driverParameterPointer.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Add;
 				driverParameterPointer.value = 1;
 				driver.parameters.Add(driverParameterPointer);
+
+				DriverParameter driverHighlight = new DriverParameter();
+				driverHighlight.name = KatSettings.ParamKeyboardHighlight;
+				driverHighlight.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+				driverHighlight.value = ConvertKeyToFloat(key);
+				driver.parameters.Add(driverHighlight);
 
 				for (int j = 0; j < KatSettings.SyncParamsSize; j++) {
 					DriverParameter driverParameterChar = new DriverParameter();
@@ -354,6 +382,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorState stateKeyClear = CreateState(stateMachine, "KeyClear", new Vector3(0f, 550f, 0f), animations.nothing);
 			AnimatorStateTransition transitionKeyClearDown = CreateTransition(stateStandby, stateKeyClear);
 			transitionKeyClearDown.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedClear);
+			transitionKeyClearDown.duration = 0.2f;
+			transitionKeyClearDown.hasFixedDuration = true;
 			AnimatorStateTransition transitionKeyClearUp = CreateTransition(stateKeyClear, stateStandby);
 			transitionKeyClearUp.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressedClear);
 
@@ -367,6 +397,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			driverKeyClearParameter.value = 255;
 			driveKeyClear.parameters.Add(driverKeyClearParameter);
 
+			DriverParameter driverHighlightClear = new DriverParameter();
+			driverHighlightClear.name = KatSettings.ParamKeyboardHighlight;
+			driverHighlightClear.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverHighlightClear.value = ConvertKeyToFloat(KatSettings.KeyboardKeyClear);
+			driveKeyClear.parameters.Add(driverHighlightClear);
+
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
 				DriverParameter driverParameterChar = new DriverParameter();
 				driverParameterChar.name = KatSettings.ParamTextSyncPrefix + i.ToString();
@@ -377,13 +413,20 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			// Create backspace start key
 			AnimatorState stateKeyBkspStart = CreateState(stateMachine, "KeyBackspaceStart", new Vector3(0f, 600f, 0f), animations.nothing);
-			stateKeyBkspStart.speed = 1f;
 			AnimatorStateTransition transitionKeyBkspDownStart = CreateTransition(stateStandby, stateKeyBkspStart);
 			transitionKeyBkspDownStart.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedBackspace);
+			transitionKeyBkspDownStart.duration = 0.2f;
+			transitionKeyBkspDownStart.hasFixedDuration = true;
 
 			Driver driverBkspStart = stateKeyBkspStart.AddStateMachineBehaviour<Driver>();
 			driverBkspStart.localOnly = true;
 			driverBkspStart.parameters = new List<DriverParameter>();
+
+			DriverParameter driverHighlightBksp = new DriverParameter();
+			driverHighlightBksp.name = KatSettings.ParamKeyboardHighlight;
+			driverHighlightBksp.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverHighlightBksp.value = ConvertKeyToFloat(KatSettings.KeyboardKeyBackspace);
+			driverBkspStart.parameters.Add(driverHighlightBksp);
 
 			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
 				DriverParameter driverParameterChar = new DriverParameter();
@@ -399,8 +442,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transitionKeyBkspEnd.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressedBackspace);
 
 			AnimatorStateTransition transitionKeyBkspUpFirst = CreateTransition(stateKeyBkspStart, stateKeyBkspEnd);
-			transitionKeyBkspUpFirst.hasExitTime = true;
-			transitionKeyBkspUpFirst.exitTime = 0.2f;
+			transitionKeyBkspUpFirst.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+			transitionKeyBkspUpFirst.duration = 0.2f;
+			transitionKeyBkspUpFirst.hasFixedDuration = true;
 
 			Driver driverBksp = stateKeyBkspEnd.AddStateMachineBehaviour<Driver>();
 			driverBksp.localOnly = true;
@@ -450,11 +494,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transition = CreateTransition(stateDisabledEnd, stateEnabledStart);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedShiftL);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 			transition = CreateTransition(stateDisabledEnd, stateEnabledStart);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedShiftR);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 
 			transition = CreateTransition(stateEnabledStart, stateEnabledEnd);
 			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressedShiftL);
@@ -463,13 +507,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transition = CreateTransition(stateEnabledEnd, stateDisabledStart);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedShiftL);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 			transition = CreateTransition(stateEnabledEnd, stateDisabledStart);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedShiftR);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
-
-			// transitionDisabled.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
+			transition.duration = 0.1f;
 
 			return layer;
 		}
@@ -494,19 +536,20 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			transition = CreateTransition(stateProximityClose, stateProximityFar);
 			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardProximity);
+			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardProximityExit);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 
 			transition = CreateTransition(stateProximityClose, stateProximityFar);
 			transition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamTextVisible);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 
 			transition = CreateTransition(stateProximityFar, stateProximityClose);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardProximity);
 			transition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
 			transition.hasFixedDuration = true;
-			transition.duration = 0.15f;
+			transition.duration = 0.1f;
 
 			// Create locomotion lock
 			LocomotionControl locomotionControlClose = stateProximityClose.AddStateMachineBehaviour<LocomotionControl>();
@@ -514,6 +557,24 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			LocomotionControl locomotionControlFar = stateProximityFar.AddStateMachineBehaviour<LocomotionControl>();
 			locomotionControlFar.disableLocomotion = false;
+
+			return layer;
+		}
+
+		private static AnimatorControllerLayer CreateKeyboardHighlightLayer(AnimatorController controller, KatAnimations animations)
+		{
+			AnimatorControllerLayer layer = new AnimatorControllerLayer();
+			AnimatorStateMachine stateMachine;
+
+			layer.name = KatSettings.ParamKeyboardHighlight;
+			layer.defaultWeight = 1f;
+			layer.stateMachine = stateMachine = new AnimatorStateMachine();
+			layer.stateMachine.name = layer.name;
+			AssetDatabase.AddObjectToAsset(layer.stateMachine, AssetDatabase.GetAssetPath(controller));
+
+			AnimatorState stateHighlight = CreateState(stateMachine, "Highlight", new Vector3(300f, 200f, 0f), animations.keyboardHighlightOn);
+			stateHighlight.timeParameter = KatSettings.ParamKeyboardHighlight;
+			stateHighlight.timeParameterActive = true;
 
 			return layer;
 		}
@@ -570,6 +631,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 		public readonly AnimationClip keyboardShiftRelease;
 		public readonly AnimationClip keyboardProximityClose;
 		public readonly AnimationClip keyboardProximityFar;
+		public readonly AnimationClip keyboardHighlightOn;
+		public readonly AnimationClip keyboardHighlightOff;
 
 
 		public readonly bool valid;
@@ -603,6 +666,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				keyboardShiftRelease = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Shift_Release");
 				keyboardProximityClose = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Proximity_Close");
 				keyboardProximityFar = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Proximity_Far");
+				keyboardHighlightOn = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Highlight_On");
+				keyboardHighlightOff = Resources.Load<AnimationClip>(KatSettings.CharacterAnimationFolder + "KAT_Keyboard_Highlight_Off");
 
 				if (
 					keyboardDisable == null ||
@@ -611,7 +676,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					keyboardShiftPress == null ||
 					keyboardShiftRelease == null ||
 					keyboardProximityClose == null ||
-					keyboardProximityFar == null
+					keyboardProximityFar == null ||
+					keyboardHighlightOn == null ||
+					keyboardHighlightOff == null
 				) {
 					valid = false;
 				}

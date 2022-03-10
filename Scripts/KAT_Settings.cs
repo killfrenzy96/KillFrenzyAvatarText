@@ -30,12 +30,19 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const string ParamKeyboardPressed = "KAT_KeyboardPressed";
 		public const string ParamKeyboardShift = "KAT_KeyboardShift";
 		public const string ParamKeyboardProximity = "KAT_KeyboardProximity";
+		public const string ParamKeyboardProximityExit = "KAT_KeyboardProximityExit";
+		public const string ParamKeyboardHighlight = "KAT_KeyboardHighlight";
 		public const string ParamKeyboardPressedClear = ParamKeyboardPressed + "Clear";
 		public const string ParamKeyboardPressedBackspace = ParamKeyboardPressed + "Bksp";
-		public const string ParamKeyboardPressedCaps = ParamKeyboardPressed + "Caps";
 		public const string ParamKeyboardPressedShiftL = ParamKeyboardPressed + "ShiftL";
 		public const string ParamKeyboardPressedShiftR = ParamKeyboardPressed + "ShiftR";
-		public const float KeyboardBackspaceMode = 97f / 256f;
+
+		public const int KeyboardKeyBackspace = 97;
+		public const int KeyboardKeyClear = 96;
+		public const int KeyboardKeyShiftL = 98;
+		public const int KeyboardKeyShiftR = 99;
+		public const float KeyboardBackspaceMode = (float)KeyboardKeyBackspace / 127f;
+
 		public const int KeyboardKeysCount = 96;
 
 		public const string CharacterAnimationFolder = "KAT_CharAnimations/";

@@ -95,7 +95,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 					GameObject attachmentTarget = new GameObject(KatSettings.KeyboardAttachmentPointName + "_Target");
 					attachmentTarget.transform.SetParent(attachmentPoint.transform);
-					attachmentTarget.transform.localPosition = new Vector3(0.0f, 0.0f, 0.3f);
+					attachmentTarget.transform.localPosition = new Vector3(0.0f, 0.0f, 0.4f);
 
 					// Create constraint on keyboard to position keyboard over the avatar
 					Transform keyboardConstraintTransform = FindTransformRecursive(keyboardObject.transform, "ConstraintChild");

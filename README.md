@@ -1,15 +1,15 @@
 # KillFrenzy Avatar Text (KAT)
 A text display system designed to be used on VRChat Avatars. This takes advantage of the new OSC (Open Sound Protocol) system that lets other programs interact with your VRChat avatar.
 
-Keep in mind that there is no in-game menu or keyboard for this system. It is designed to be used by OSC. When VRChat avatar dynamics releases, I will consider creating an in-game keyboard for this.
+An in-game keyboard is now also included using VRChat Avatar Dynamics. You can type with an OSC app, or use the in-game keyboard. (Keep in mind you can't use the in-game keyboard while the OSC app is open).
 
-![Demonstration](/Images/KAT_Demonstration.gif)
+![KeyboardDemonstration](/Images/KAT_Keyboard_Demonstration.gif) ![Demonstration](/Images/KAT_Demonstration.gif)
 
-# Recommended OSC programs
-You will need a program to use this avatar text by using VRChat OSC.
+# Recommended OSC apps
+You will need an app to write avatar text using VRChat OSC.
 
 **KillFrenzy Avatar Text OSC App**\
-A simple OSC app for KAT. Download it here:\
+My own simple OSC app for KAT. Download it here:\
 https://github.com/killfrenzy96/KatOscApp
 
 **Keyboard App by harunadev**\
@@ -19,21 +19,23 @@ Japanese: https://harunadev.booth.pm/items/3692774
 
 # Prerequisites
 - Unity 2019.4.31f1
-- VRCSDK3
-- An existing working avatar (if installing to your own custom avatar). Your avatar needs to have at least 41 bits of parameter space available.
+- VRCSDK3. Make sure it is updated to support avatar dynamics.
+- An existing working avatar (if installing to your own custom avatar).
+- Your avatar needs to have at least 42 bits of parameter space available.
+- Your avatar animator should be designed using write defaults off to avoid any issues.
 
 # Installation (Simple)
 1. Download the latest unity package from the releases: https://github.com/killfrenzy96/KillFrenzyAvatarText/releases
 2. Use the KAT installer to add this to your avatar as shown below:\
 ![InstallInstructions](/Images/KAT_Install_Simple.gif)
 3. Upload the avatar.
-4. Be sure to enable OSC once you are in VRChat.\
+4. If you are using an OSC app, make sure you enable OSC in-game.\
 ![EnableOSC](/Images/EnableOSC.gif)
 
 # Installation (Advanced)
 Example files have been included in "Assets/KillFrenzy/AvatarText/Examples/"
 
-This includes the animator controller, material, parameters, a prefab for the KAT setup, and debug expression menu.
+This includes the animator controller, material, menu, parameters, a prefab for the KAT setup. A debugging expression menu is also included.
 
 An example avatar that has KAT installed is also included.
 

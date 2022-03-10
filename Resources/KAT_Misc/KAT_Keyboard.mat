@@ -39,6 +39,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _HighlightMap:
+        m_Texture: {fileID: 2800000, guid: ca8726aa64317ad4596bf1b64ea0f639, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 1f6ca07d66c69a543a7499484a1bb810, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -69,6 +73,13 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _Highlight: 0
+    - _HighlightBrightness: 0
+    - _HighlightSelect: 2233338
+    - _HighlightX1: 0
+    - _HighlightX2: 0
+    - _HighlightY1: 0
+    - _HighlightY2: 0
     - _Metallic: 0
     - _Mode: 1
     - _OcclusionStrength: 1
