@@ -13,16 +13,6 @@ MonoBehaviour:
   m_Name: Example_KAT_Menu
   m_EditorClassIdentifier: 
   controls:
-  - name: Keyboard
-    icon: {fileID: 0}
-    type: 102
-    parameter:
-      name: KAT_Keyboard
-    value: 1
-    style: 0
-    subMenu: {fileID: 0}
-    subParameters: []
-    labels: []
   - name: Emotes
     icon: {fileID: 0}
     type: 103
@@ -31,5 +21,15 @@ MonoBehaviour:
     value: 1
     style: 0
     subMenu: {fileID: 11400000, guid: c28235e3356c6b94e97490c9f451042d, type: 2}
+    subParameters: []
+    labels: []
+  - name: Keyboard
+    icon: {fileID: 0}
+    type: 102
+    parameter:
+      name: KAT_Keyboard
+    value: 1
+    style: 0
+    subMenu: {fileID: 0}
     subParameters: []
     labels: []

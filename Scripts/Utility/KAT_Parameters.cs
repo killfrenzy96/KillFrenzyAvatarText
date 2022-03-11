@@ -18,6 +18,8 @@
 
 #if UNITY_EDITOR
 
+using UnityEditor;
+
 using System.Collections.Generic;
 
 using ExpressionParameters = VRC.SDK3.Avatars.ScriptableObjects.VRCExpressionParameters;
@@ -68,6 +70,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			targetParameters.parameters = parameters.ToArray();
+			EditorUtility.SetDirty(targetParameters);
 			return true;
 		}
 
@@ -89,6 +92,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			targetParameters.parameters = parameters.ToArray();
+			EditorUtility.SetDirty(targetParameters);
 			return true;
 		}
 	}

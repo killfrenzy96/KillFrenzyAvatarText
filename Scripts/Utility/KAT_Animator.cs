@@ -53,6 +53,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			controller.AddParameter(KatSettings.ParamTextPointer, AnimatorControllerParameterType.Int);
 
 			if (installKeyboard) {
+				AddParameterIfMissing(controller, "IsLocal", AnimatorControllerParameterType.Bool);
+				AddParameterIfMissing(controller, "VRMode", AnimatorControllerParameterType.Int);
 				controller.AddParameter(KatSettings.ParamKeyboardPrefix, AnimatorControllerParameterType.Bool);
 				controller.AddParameter(KatSettings.ParamKeyboardProximity, AnimatorControllerParameterType.Float);
 				controller.AddParameter(KatSettings.ParamKeyboardProximityExit, AnimatorControllerParameterType.Float);
@@ -85,6 +87,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				controller.AddLayer(CreateSyncLayer(controller, i, animations, installKeyboard));
 			}
 
+			EditorUtility.SetDirty(controller);
 			return true;
 		}
 
@@ -125,6 +128,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				}
 			}
 
+			EditorUtility.SetDirty(controller);
 			return true;
 		}
 
@@ -313,8 +317,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorState stateAppActive = CreateState(stateMachine, "App Active", new Vector3(600f, 400f, 0f), animations.keyboardEnable);
 			AnimatorStateTransition transitionAppActiveEnter = CreateTransition(stateStandby, stateAppActive);
 			transitionAppActiveEnter.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamTextVisible);
+			AnimatorStateTransition transitionAppActiveEnter2 = CreateTransition(stateStandby, stateAppActive);
+			transitionAppActiveEnter2.AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
 			AnimatorStateTransition transitionAppActiveExit = CreateTransition(stateAppActive, stateStandby);
 			transitionAppActiveExit.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
+			transitionAppActiveExit.AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
 
 			// Fix Pointer - places pointer within offset if out of range
 			AnimatorState stateFix = CreateState(stateMachine, "Fix Pointer", new Vector3(0f, 500f, 0f), animations.nothing);
@@ -490,6 +497,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transition = CreateTransition(stateDisabledStart, stateDisabledEnd);
 			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressedShiftL);
 			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardPressedShiftR);
+			transition.AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
 
 			transition = CreateTransition(stateDisabledEnd, stateEnabledStart);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardPressedShiftL);
@@ -530,6 +538,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			// Create states
 			AnimatorState stateProximityFar = CreateState(stateMachine, "Proximity Far", new Vector3(300f, 200f, 0f), animations.keyboardProximityFar);
 			AnimatorState stateProximityClose = CreateState(stateMachine, "Proximity Close", new Vector3(600f, 200f, 0f), animations.keyboardProximityClose);
+			AnimatorState stateProximityCloseDesktop = CreateState(stateMachine, "Proximity Close Desktop", new Vector3(300f, 300f, 0f), animations.keyboardProximityClose);
 
 			// Create transitions
 			AnimatorStateTransition transition;
@@ -545,9 +554,41 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transition.hasFixedDuration = true;
 			transition.duration = 0.1f;
 
+			transition = CreateTransition(stateProximityClose, stateProximityFar);
+			transition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
+			transition.hasFixedDuration = true;
+			transition.duration = 0.1f;
+
 			transition = CreateTransition(stateProximityFar, stateProximityClose);
 			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardProximity);
 			transition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
+			transition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+			transition.AddCondition(AnimatorConditionMode.Equals, 1, "VRMode");
+			transition.hasFixedDuration = true;
+			transition.duration = 0.1f;
+
+			// Creat desktop mode transitions (currently just visual)
+			transition = CreateTransition(stateProximityCloseDesktop, stateProximityFar);
+			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardProximity);
+			transition.AddCondition(AnimatorConditionMode.Less, 0.5f, KatSettings.ParamKeyboardProximityExit);
+			transition.hasFixedDuration = true;
+			transition.duration = 0.1f;
+
+			transition = CreateTransition(stateProximityCloseDesktop, stateProximityFar);
+			transition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamTextVisible);
+			transition.hasFixedDuration = true;
+			transition.duration = 0.1f;
+
+			transition = CreateTransition(stateProximityCloseDesktop, stateProximityFar);
+			transition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamKeyboardPrefix);
+			transition.hasFixedDuration = true;
+			transition.duration = 0.1f;
+
+			transition = CreateTransition(stateProximityFar, stateProximityCloseDesktop);
+			transition.AddCondition(AnimatorConditionMode.Greater, 0.5f, KatSettings.ParamKeyboardProximity);
+			transition.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
+			transition.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamKeyboardPrefix);
+			transition.AddCondition(AnimatorConditionMode.Equals, 0, "VRMode");
 			transition.hasFixedDuration = true;
 			transition.duration = 0.1f;
 
@@ -602,6 +643,21 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transition.duration = 0;
 			transition.canTransitionToSelf = false;
 			return transition;
+		}
+
+		private static bool AddParameterIfMissing(AnimatorController controller, string name, AnimatorControllerParameterType type)
+		{
+			foreach (AnimatorControllerParameter parameter in controller.parameters) {
+				if (parameter.name == name) {
+					if (parameter.type == type) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			}
+			controller.AddParameter(name, type);
+			return true;
 		}
 
 		private static float ConvertKeyToFloat(int key)

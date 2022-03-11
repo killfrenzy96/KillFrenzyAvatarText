@@ -48,9 +48,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			control.parameter = new Parameter();
 			control.parameter.name = KatSettings.ParamKeyboardPrefix;
 			control.type = Control.ControlType.Toggle;
-
 			targetMenu.controls.Add(control);
 
+			EditorUtility.SetDirty(targetMenu);
 			return true;
 		}
 
@@ -63,6 +63,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					break;
 				}
 			}
+
+			EditorUtility.SetDirty(targetMenu);
 			return true;
 		}
 	}

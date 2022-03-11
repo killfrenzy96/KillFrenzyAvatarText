@@ -138,8 +138,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				KatParametersInstaller.InstallToParameters(expressionParameters, installKeyboard) &&
 				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint, installKeyboard)
 			) {
+				EditorUtility.SetDirty(avatarDescriptor);
 				return true;
 			} else {
+				EditorUtility.SetDirty(avatarDescriptor);
 				return false;
 			}
 		}

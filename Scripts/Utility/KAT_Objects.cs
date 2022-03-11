@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -181,12 +182,13 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			MeshRenderer textRenderer = textObject.GetComponent<MeshRenderer>();
 			textRenderer.material = textMaterial;
 
+			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
 			return true;
 		}
 
-		public static bool RemoveObjectsFromAvatar(VRCAvatarDescriptor avatar)
+		public static bool RemoveObjectsFromAvatar(VRCAvatarDescriptor avatarDescriptor)
 		{
-			Transform avatarRootTransform = avatar.gameObject.transform;
+			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform katObjectTransform = avatarRootTransform.transform.Find("KillFrenzyAvatarText");
 			if (katObjectTransform) {
 				// Remove constraint target
@@ -225,10 +227,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					GameObject.DestroyImmediate(keyboardObjectTransform.gameObject);
 				} catch {
 					Debug.LogWarning("Warning: Unable to destroy the KillFrenzyAvatarKeyboard object.");
+					EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
 					return false;
 				}
 			}
 
+			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
 			return true;
 		}
 
