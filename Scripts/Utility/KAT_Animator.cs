@@ -318,10 +318,9 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			AnimatorStateTransition transitionAppActiveEnter = CreateTransition(stateStandby, stateAppActive);
 			transitionAppActiveEnter.AddCondition(AnimatorConditionMode.If, 0, KatSettings.ParamTextVisible);
 			AnimatorStateTransition transitionAppActiveEnter2 = CreateTransition(stateStandby, stateAppActive);
-			transitionAppActiveEnter2.AddCondition(AnimatorConditionMode.If, 0, "IsLocal");
+			transitionAppActiveEnter2.AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
 			AnimatorStateTransition transitionAppActiveExit = CreateTransition(stateAppActive, stateStandby);
 			transitionAppActiveExit.AddCondition(AnimatorConditionMode.IfNot, 0, KatSettings.ParamTextVisible);
-			transitionAppActiveExit.AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
 
 			// Fix Pointer - places pointer within offset if out of range
 			AnimatorState stateFix = CreateState(stateMachine, "Fix Pointer", new Vector3(0f, 500f, 0f), animations.nothing);
