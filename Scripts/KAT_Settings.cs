@@ -20,42 +20,60 @@
 
 namespace KillFrenzy.AvatarTextTools.Settings
 {
-	public static class KatSettings
+	public class KatSettings
 	{
-		public const string ParamTextVisible = "KAT_Visible";
-		public const string ParamTextPointer = "KAT_Pointer";
-		public const string ParamTextSyncPrefix = "KAT_CharSync";
+		public readonly string ParamTextVisible = "KAT_Visible";
+		public readonly string ParamTextPointer = "KAT_Pointer";
+		public readonly string ParamTextSyncPrefix = "KAT_CharSync";
 
-		public const string ParamKeyboardPrefix = "KAT_Keyboard";
-		public const string ParamKeyboardPressed = "KAT_KeyboardPressed";
-		public const string ParamKeyboardShift = "KAT_KeyboardShift";
-		public const string ParamKeyboardProximity = "KAT_KeyboardProximity";
-		public const string ParamKeyboardProximityExit = "KAT_KeyboardProximityExit";
-		public const string ParamKeyboardHighlight = "KAT_KeyboardHighlight";
-		public const string ParamKeyboardPressedClear = ParamKeyboardPressed + "Clear";
-		public const string ParamKeyboardPressedBackspace = ParamKeyboardPressed + "Bksp";
-		public const string ParamKeyboardPressedShiftL = ParamKeyboardPressed + "ShiftL";
-		public const string ParamKeyboardPressedShiftR = ParamKeyboardPressed + "ShiftR";
+		public readonly string ParamKeyboardPrefix = "KAT_Keyboard";
+		public readonly string ParamKeyboardPressed = "KAT_KeyboardPressed";
+		public readonly string ParamKeyboardShift = "KAT_KeyboardShift";
+		public readonly string ParamKeyboardProximity = "KAT_KeyboardProximity";
+		public readonly string ParamKeyboardProximityExit = "KAT_KeyboardProximityExit";
+		public readonly string ParamKeyboardHighlight = "KAT_KeyboardHighlight";
+		public readonly string ParamKeyboardPressedClear = "KAT_KeyboardPressedClear";
+		public readonly string ParamKeyboardPressedBackspace = "KAT_KeyboardPressedBksp";
+		public readonly string ParamKeyboardPressedShiftL = "KAT_KeyboardPressedShiftL";
+		public readonly string ParamKeyboardPressedShiftR = "KAT_KeyboardPressedShiftR";
 
-		public const int KeyboardKeyBackspace = 97;
-		public const int KeyboardKeyClear = 96;
-		public const int KeyboardKeyShiftL = 98;
-		public const int KeyboardKeyShiftR = 99;
-		public const float KeyboardBackspaceMode = (float)KeyboardKeyBackspace / 127f;
+		public readonly int KeyboardKeyBackspace = 97;
+		public readonly int KeyboardKeyClear = 96;
+		public readonly int KeyboardKeyShiftL = 98;
+		public readonly int KeyboardKeyShiftR = 99;
+		public readonly float KeyboardBackspaceMode = 97f / 127f;
 
-		public const int KeyboardKeysCount = 96;
+		public readonly int KeyboardKeysCount = 96;
 
-		public const string CharacterAnimationFolder = "KAT_CharAnimations/";
-		public const string CharacterAnimationClipNamePrefix = "Char";
-		public const int TextLength = 128;
-		public const int SyncParamsSize = 4;
-		public const int PointerCount = TextLength / SyncParamsSize;
-		public const int PointerAltSyncOffset = 100;
+		public readonly string CharacterAnimationFolder = "KAT_CharAnimations/";
+		public readonly string CharacterAnimationClipNamePrefix = "Char";
+		public readonly int TextLength = 128;
+		public readonly int SyncParamsSize = 4;
+		public readonly int PointerCount = 32; // = TextLength / SyncParamsSize;
+		public readonly int PointerAltSyncOffset = 100;
+		public readonly bool InstallKeyboard = true;
 
-		public const string GeneratedOutputFolderName = "KAT_GeneratedOutput";
+		public readonly string GeneratedOutputFolderName = "KAT_GeneratedOutput";
 
-		public const string TextAttachmentPointName = "KAT_Text_AttachmentPoint";
-		public const string KeyboardAttachmentPointName = "KAT_Keyboard_AttachmentPoint";
+		public readonly string TextAttachmentPointName = "KAT_Text_AttachmentPoint";
+		public readonly string KeyboardAttachmentPointName = "KAT_Keyboard_AttachmentPoint";
+		public readonly int AttachmentPoint = KatAttachmentPoint.Chest;
+
+		public KatSettings(bool installKeyboard = true, int attachmentPoint = KatAttachmentPoint.Chest, int syncParamsSize = 4)
+		{
+			InstallKeyboard = installKeyboard;
+			SyncParamsSize = syncParamsSize;
+			PointerCount = TextLength / SyncParamsSize;
+			AttachmentPoint = attachmentPoint;
+			if (SyncParamsSize == 1) {
+				PointerAltSyncOffset = 0;
+			}
+		}
+
+		public int GetPointerCount()
+		{
+			return TextLength / SyncParamsSize;
+		}
 	}
 
 	public static class KatAttachmentPoint

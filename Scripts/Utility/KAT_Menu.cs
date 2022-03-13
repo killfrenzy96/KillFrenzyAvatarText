@@ -34,19 +34,19 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatMenuInstaller
 	{
-		public static bool InstallToMenu(ExpressionsMenu targetMenu, bool installKeyboard)
+		public static bool InstallToMenu(ExpressionsMenu targetMenu, KatSettings settings)
 		{
-			if (!installKeyboard) return false;
+			if (!settings.InstallKeyboard) return false;
 
 			if (targetMenu.controls.Count >= 8) {
-				Debug.LogError("Error: Avatar controls list is already full. Please add '" + KatSettings.ParamKeyboardPrefix + "' to you avatar manually.");
+				Debug.LogError("Error: Avatar controls list is already full. Please add '" + settings.ParamKeyboardPrefix + "' to you avatar manually.");
 				return false;
 			}
 
 			Control control = new Control();
 			control.name = "Keyboard";
 			control.parameter = new Parameter();
-			control.parameter.name = KatSettings.ParamKeyboardPrefix;
+			control.parameter.name = settings.ParamKeyboardPrefix;
 			control.type = Control.ControlType.Toggle;
 			targetMenu.controls.Add(control);
 
@@ -54,11 +54,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return true;
 		}
 
-		public static bool RemoveFromMenu(ExpressionsMenu targetMenu)
+		public static bool RemoveFromMenu(ExpressionsMenu targetMenu, KatSettings settings)
 		{
 			for (int i = 0; i < targetMenu.controls.Count; i++) {
 				Control control = targetMenu.controls[i];
-				if (control.parameter != null && control.parameter.name == KatSettings.ParamKeyboardPrefix) {
+				if (control.parameter != null && control.parameter.name == settings.ParamKeyboardPrefix) {
 					targetMenu.controls.Remove(control);
 					break;
 				}

@@ -39,7 +39,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatAvatarInstaller
 	{
-		public static bool InstallToAvatar(VRCAvatarDescriptor avatarDescriptor, int attachmentPoint, bool installKeyboard)
+		public static bool InstallToAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
 		{
 			AnimatorController animatorControllerFx = null;
 			VRCAvatarDescriptor.CustomAnimLayer animatorLayer;
@@ -85,8 +85,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					}
 				}
 
-				CreateOutputFolder();
-				AssetDatabase.CreateAsset(animatorControllerFx, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_AnimatorFX_" + System.Guid.NewGuid().ToString() + ".controller");
+				CreateOutputFolder(settings);
+				AssetDatabase.CreateAsset(animatorControllerFx, "Assets/" + settings.GeneratedOutputFolderName + "/KAT_AnimatorFX_" + System.Guid.NewGuid().ToString() + ".controller");
 			}
 
 			// No parameters found, create new parameters
@@ -103,8 +103,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					}
 				};
 
-				CreateOutputFolder();
-				AssetDatabase.CreateAsset(expressionParameters, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_ExpressionParameters_" + System.Guid.NewGuid().ToString() + ".asset");
+				CreateOutputFolder(settings);
+				AssetDatabase.CreateAsset(expressionParameters, "Assets/" + settings.GeneratedOutputFolderName + "/KAT_ExpressionParameters_" + System.Guid.NewGuid().ToString() + ".asset");
 			}
 
 			// No menu found, create new menu
@@ -128,15 +128,15 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				control.type = Control.ControlType.SubMenu;
 				expressionsMenu.controls.Add(control);
 
-				CreateOutputFolder();
-				AssetDatabase.CreateAsset(expressionsMenu, "Assets/" + KatSettings.GeneratedOutputFolderName + "/KAT_ExpressionMenu_" + System.Guid.NewGuid().ToString() + ".asset");
+				CreateOutputFolder(settings);
+				AssetDatabase.CreateAsset(expressionsMenu, "Assets/" + settings.GeneratedOutputFolderName + "/KAT_ExpressionMenu_" + System.Guid.NewGuid().ToString() + ".asset");
 			}
 
 			if (
-				KatAnimatorInstaller.InstallToAnimator(animatorControllerFx, installKeyboard) &&
-				KatMenuInstaller.InstallToMenu(expressionsMenu, installKeyboard) &&
-				KatParametersInstaller.InstallToParameters(expressionParameters, installKeyboard) &&
-				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, attachmentPoint, installKeyboard)
+				KatAnimatorInstaller.InstallToAnimator(animatorControllerFx, settings) &&
+				KatMenuInstaller.InstallToMenu(expressionsMenu, settings) &&
+				KatParametersInstaller.InstallToParameters(expressionParameters, settings) &&
+				KatObjectsInstaller.InstallObjectsToAvatar(avatarDescriptor, settings)
 			) {
 				EditorUtility.SetDirty(avatarDescriptor);
 				return true;
@@ -146,7 +146,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 		}
 
-		public static bool RemoveFromAvatar(VRCAvatarDescriptor avatarDescriptor)
+		public static bool RemoveFromAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
 		{
 			AnimatorController animatorControllerFx = null;
 			ExpressionsMenu expressionsMenu = avatarDescriptor.expressionsMenu;
@@ -162,25 +162,25 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			if (animatorControllerFx != null) {
-				KatAnimatorInstaller.RemoveFromAnimator(animatorControllerFx);
+				KatAnimatorInstaller.RemoveFromAnimator(animatorControllerFx, settings);
 			}
 
 			if (expressionsMenu != null) {
-				KatMenuInstaller.RemoveFromMenu(expressionsMenu);
+				KatMenuInstaller.RemoveFromMenu(expressionsMenu, settings);
 			}
 
 			if (expressionParameters != null) {
-				KatParametersInstaller.RemoveFromParameters(expressionParameters);
+				KatParametersInstaller.RemoveFromParameters(expressionParameters, settings);
 			}
 
-			KatObjectsInstaller.RemoveObjectsFromAvatar(avatarDescriptor);
+			KatObjectsInstaller.RemoveObjectsFromAvatar(avatarDescriptor, settings);
 
 			return true;
 		}
 
-		public static void CreateOutputFolder() {
-			if (AssetDatabase.AssetPathToGUID("Assets/" + KatSettings.GeneratedOutputFolderName) == "") {
-				AssetDatabase.CreateFolder("Assets", KatSettings.GeneratedOutputFolderName);
+		public static void CreateOutputFolder(KatSettings settings) {
+			if (AssetDatabase.AssetPathToGUID("Assets/" + settings.GeneratedOutputFolderName) == "") {
+				AssetDatabase.CreateFolder("Assets", settings.GeneratedOutputFolderName);
 			}
 		}
 

@@ -32,21 +32,21 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatParametersInstaller
 	{
-		public static bool InstallToParameters(ExpressionParameters targetParameters, bool installKeyboard)
+		public static bool InstallToParameters(ExpressionParameters targetParameters, KatSettings settings)
 		{
 			List<ExpressionParameter> parameters = new List<ExpressionParameter>();
 			parameters.AddRange(targetParameters.parameters);
 
 			parameters.Add(new ExpressionParameter() {
-				name = KatSettings.ParamTextVisible,
+				name = settings.ParamTextVisible,
 				valueType = ExpressionParameters.ValueType.Bool,
 				defaultValue = 0,
 				saved = false
 			});
 
-			if (installKeyboard) {
+			if (settings.InstallKeyboard) {
 				parameters.Add(new ExpressionParameter() {
-					name = KatSettings.ParamKeyboardPrefix,
+					name = settings.ParamKeyboardPrefix,
 					valueType = ExpressionParameters.ValueType.Bool,
 					defaultValue = 0,
 					saved = false
@@ -54,15 +54,15 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			parameters.Add(new ExpressionParameter() {
-				name = KatSettings.ParamTextPointer,
+				name = settings.ParamTextPointer,
 				valueType = ExpressionParameters.ValueType.Int,
 				defaultValue = 0,
 				saved = false
 			});
 
-			for (int i = 0; i < KatSettings.SyncParamsSize; i++) {
+			for (int i = 0; i < settings.SyncParamsSize; i++) {
 				parameters.Add(new ExpressionParameter() {
-					name = KatSettings.ParamTextSyncPrefix + i.ToString(),
+					name = settings.ParamTextSyncPrefix + i.ToString(),
 					valueType = ExpressionParameters.ValueType.Float,
 					defaultValue = 0,
 					saved = false
@@ -74,7 +74,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			return true;
 		}
 
-		public static bool RemoveFromParameters(ExpressionParameters targetParameters)
+		public static bool RemoveFromParameters(ExpressionParameters targetParameters, KatSettings settings)
 		{
 			List<ExpressionParameter> parameters = new List<ExpressionParameter>();
 			parameters.AddRange(targetParameters.parameters);
@@ -82,10 +82,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			for (int i = 0; i < targetParameters.parameters.Length; i++) {
 				ExpressionParameter parameter = targetParameters.parameters[i];
 				if (
-					parameter.name.StartsWith(KatSettings.ParamTextVisible) ||
-					parameter.name.StartsWith(KatSettings.ParamKeyboardPrefix) ||
-					parameter.name.StartsWith(KatSettings.ParamTextPointer) ||
-					parameter.name.StartsWith(KatSettings.ParamTextSyncPrefix)
+					parameter.name.StartsWith(settings.ParamTextVisible) ||
+					parameter.name.StartsWith(settings.ParamKeyboardPrefix) ||
+					parameter.name.StartsWith(settings.ParamTextPointer) ||
+					parameter.name.StartsWith(settings.ParamTextSyncPrefix)
 				) {
 					parameters.Remove(parameter);
 				}

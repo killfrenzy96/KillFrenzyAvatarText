@@ -18,6 +18,7 @@
 
 #if UNITY_EDITOR
 
+using System;
 using UnityEngine;
 using UnityEditor;
 
@@ -40,6 +41,7 @@ namespace KillFrenzy.AvatarTextTools
 		private VRCAvatarDescriptor targetAvatar = null;
 		private int attachmentPoint = KatAttachmentPoint.Chest;
 		private int installKeyboard = 1;
+		private int syncParamSize = 2;
 
 		private int tab = 0;
 		private bool optionsExpand = false;
@@ -115,10 +117,11 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetAvatar == null) {
 					Debug.LogError("Failed: No VRC avatar has been selected.");
 				} else {
-					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar, settings)) {
 						Debug.LogWarning("Warning: KAT removal failed. This is done before installation.");
 					}
-					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, attachmentPoint, installKeyboard != 0 ? true : false)) {
+					if (!KatAvatarInstaller.InstallToAvatar(targetAvatar, settings)) {
 						Debug.LogError("KAT install failed.");
 					} else {
 						Debug.Log("KAT install complete.");
@@ -130,7 +133,8 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetAvatar == null) {
 					Debug.LogError("Failed: No avatar has been selected.");
 				} else {
-					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatAvatarInstaller.RemoveFromAvatar(targetAvatar, settings)) {
 						Debug.LogError("KAT removal failed.");
 					} else {
 						Debug.Log("KAT removal complete.");
@@ -155,10 +159,11 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetController == null) {
 					Debug.LogError("Failed: No animator has been selected.");
 				} else {
-					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController, settings)) {
 						Debug.LogWarning("Warning: KAT animator removal failed. This is done before installation.");
 					}
-					if (!KatAnimatorInstaller.InstallToAnimator(targetController, installKeyboard != 0 ? true : false)) {
+					if (!KatAnimatorInstaller.InstallToAnimator(targetController, settings)) {
 						Debug.LogError("KAT animator install failed.");
 					} else {
 						Debug.Log("KAT animator install complete.");
@@ -170,7 +175,8 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetController == null) {
 					Debug.LogError("Failed: No animator has been selected.");
 				} else {
-					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatAnimatorInstaller.RemoveFromAnimator(targetController, settings)) {
 						Debug.LogError("KAT animator removal failed.");
 					} else {
 						Debug.Log("KAT animator removal complete.");
@@ -190,10 +196,11 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetMenu == null) {
 					Debug.LogError("Failed: No expressions menu has been selected.");
 				} else {
-					if (!KatMenuInstaller.RemoveFromMenu(targetMenu)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatMenuInstaller.RemoveFromMenu(targetMenu, settings)) {
 						Debug.LogWarning("Warning: KAT expressions menu removal failed. This is done before installation.");
 					}
-					if (!KatMenuInstaller.InstallToMenu(targetMenu, installKeyboard != 0 ? true : false)) {
+					if (!KatMenuInstaller.InstallToMenu(targetMenu, settings)) {
 						Debug.LogError("KAT expressions menu install failed.");
 					} else {
 						Debug.Log("KAT expressions menu install complete.");
@@ -205,7 +212,8 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetMenu == null) {
 					Debug.LogError("Failed: No expressions menu has been selected.");
 				} else {
-					if (!KatMenuInstaller.RemoveFromMenu(targetMenu)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatMenuInstaller.RemoveFromMenu(targetMenu, settings)) {
 						Debug.LogError("KAT expressions menu removal failed.");
 					} else {
 						Debug.Log("KAT expressions menu removal complete.");
@@ -225,10 +233,11 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetParameters == null) {
 					Debug.LogError("Failed: No expression parameters has been selected.");
 				} else {
-					if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatParametersInstaller.RemoveFromParameters(targetParameters, settings)) {
 						Debug.LogWarning("Warning: KAT expression parameters removal failed. This is done before installation.");
 					}
-					if (!KatParametersInstaller.InstallToParameters(targetParameters, installKeyboard != 0 ? true : false)) {
+					if (!KatParametersInstaller.InstallToParameters(targetParameters, settings)) {
 						Debug.LogError("KAT expression parameters install failed.");
 					} else {
 						Debug.Log("KAT expression parameters install complete.");
@@ -240,7 +249,8 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetParameters == null) {
 					Debug.LogError("Failed: No expression parameters has been selected.");
 				} else {
-					if (!KatParametersInstaller.RemoveFromParameters(targetParameters)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatParametersInstaller.RemoveFromParameters(targetParameters, settings)) {
 						Debug.LogError("KAT expression parameters removal failed.");
 					} else {
 						Debug.Log("KAT expression parameters removal complete.");
@@ -260,10 +270,11 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetAvatar == null) {
 					Debug.LogError("Failed: No VRC avatar descriptor has been selected.");
 				} else {
-					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar, settings)) {
 						Debug.LogWarning("Warning: KAT avatar parts removal failed. This is done before installation.");
 					}
-					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, attachmentPoint, installKeyboard != 0 ? true : false)) {
+					if (!KatObjectsInstaller.InstallObjectsToAvatar(targetAvatar, settings)) {
 						Debug.LogError("KAT avatar parts install failed.");
 					} else {
 						Debug.Log("KAT avatar parts install complete.");
@@ -275,13 +286,18 @@ namespace KillFrenzy.AvatarTextTools
 				if (targetAvatar == null) {
 					Debug.LogError("Failed: No avatar descriptor has been selected.");
 				} else {
-					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar)) {
+					KatSettings settings = GetKatSettings();
+					if (!KatObjectsInstaller.RemoveObjectsFromAvatar(targetAvatar, settings)) {
 						Debug.LogError("KAT avatar parts removal failed.");
 					} else {
 						Debug.Log("KAT avatar parts removal complete.");
 					}
 				}
 			}
+		}
+
+		private KatSettings GetKatSettings() {
+			return new KatSettings(installKeyboard != 0 ? true : false, attachmentPoint, (int)Math.Pow(2, syncParamSize));
 		}
 
 		private void DrawOptions()
@@ -301,6 +317,16 @@ namespace KillFrenzy.AvatarTextTools
 				"None",
 				"Head",
 				"Chest"
+			});
+
+			EditorGUILayout.Space();
+
+			EditorGUILayout.LabelField("Sync Parameters (Lower = Less Parameters, Higher = Faster OSC Sync)");
+			syncParamSize = EditorGUILayout.Popup(syncParamSize, new string[4] {
+				"1 (In-game keyboard speed)",
+				"2 (Typing speed)",
+				"4 (Faster)",
+				"8 (Speech to text speed)"
 			});
 
 			EditorGUILayout.Space();
