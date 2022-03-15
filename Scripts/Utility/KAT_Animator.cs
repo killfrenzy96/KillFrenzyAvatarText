@@ -271,6 +271,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			stateInit.speed = 1.0f;
 			AnimatorStateTransition transitionInit = CreateTransition(stateDisabled, stateInit);
 			transitionInit.AddCondition(AnimatorConditionMode.If, 0, settings.ParamKeyboardPrefix);
+			transitionInit.AddCondition(AnimatorConditionMode.IfNot, 0, settings.ParamTextVisible);
 
 			Driver driverInit = stateInit.AddStateMachineBehaviour<Driver>();
 			driverInit.localOnly = true;
@@ -295,6 +296,23 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				driverParameterChar.value = 0.0f;
 				driverInit.parameters.Add(driverParameterChar);
 			}
+
+			// Alternate init state - initializes keyboard without touching the text if OSC is taking priority
+			AnimatorState stateInitAlt = CreateState(stateMachine, "Init App Active", new Vector3(600f, 300f, 0f), animations.keyboardInit);
+			stateInitAlt.speed = 1.0f;
+			AnimatorStateTransition transitionInitAlt = CreateTransition(stateDisabled, stateInitAlt);
+			transitionInitAlt.AddCondition(AnimatorConditionMode.If, 0, settings.ParamKeyboardPrefix);
+			transitionInitAlt.AddCondition(AnimatorConditionMode.If, 0, settings.ParamTextVisible);
+
+			Driver driverInitAlt = stateInitAlt.AddStateMachineBehaviour<Driver>();
+			driverInitAlt.localOnly = true;
+			driverInitAlt.parameters = new List<DriverParameter>();
+
+			DriverParameter driverStateInitAlt = new DriverParameter();
+			driverStateInitAlt.name = settings.ParamKeyboardHighlight;
+			driverStateInitAlt.type = VRC.SDKBase.VRC_AvatarParameterDriver.ChangeType.Set;
+			driverStateInitAlt.value = ConvertKeyToFloat(100);
+			driverInitAlt.parameters.Add(driverStateInitAlt);
 
 			// Standby state - waits for updates to the pointer
 			AnimatorState stateStandby = CreateState(stateMachine, "StandBy", new Vector3(300f, 500f, 0f), animations.keyboardEnable);
@@ -321,6 +339,11 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			transitionAppActiveEnter2.AddCondition(AnimatorConditionMode.IfNot, 0, "IsLocal");
 			AnimatorStateTransition transitionAppActiveExit = CreateTransition(stateAppActive, stateStandby);
 			transitionAppActiveExit.AddCondition(AnimatorConditionMode.IfNot, 0, settings.ParamTextVisible);
+
+			AnimatorStateTransition transitionEnabled2 = CreateTransition(stateInitAlt, stateAppActive);
+			transitionEnabled2.AddCondition(AnimatorConditionMode.If, 0, settings.ParamKeyboardPrefix);
+			transitionEnabled2.hasExitTime = true;
+			transitionEnabled2.exitTime = 0.2f;
 
 			// Fix Pointer - places pointer within offset if out of range
 			AnimatorState stateFix = CreateState(stateMachine, "Fix Pointer", new Vector3(0f, 500f, 0f), animations.nothing);
