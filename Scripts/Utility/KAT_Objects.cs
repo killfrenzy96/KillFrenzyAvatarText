@@ -238,8 +238,19 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 		private static Transform FindAvatarChest(Transform transform)
 		{
-			Transform chest = FindTransformRecursive(transform, "chest");
+			Transform chest = null;
 
+			// Get chest from animator bone
+			Animator animator = transform.GetComponent<Animator>();
+			if (animator != null) {
+				chest = animator.GetBoneTransform(HumanBodyBones.Chest);
+				if (chest != null) {
+					return chest;
+				}
+			}
+
+			// Otherwise check bone transform names to find the head
+			chest = FindTransformRecursive(transform, "chest");
 			if (chest != null) {
 				Transform neck = FindTransformRecursive(transform, "neck");
 				if (neck != null) {
@@ -252,10 +263,21 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 		private static Transform FindAvatarHead(Transform transform)
 		{
-			Transform neck = FindTransformRecursive(transform, "neck");
+			Transform head = null;
 
+			// Get neck from animator bone
+			Animator animator = transform.GetComponent<Animator>();
+			if (animator != null) {
+				head = animator.GetBoneTransform(HumanBodyBones.Head);
+				if (head != null) {
+					return head;
+				}
+			}
+
+			// Otherwise check bone transform names to find the head
+			Transform neck = FindTransformRecursive(transform, "neck");
 			if (neck != null) {
-				Transform head = FindTransformRecursive(transform, "head");
+				head = FindTransformRecursive(transform, "head");
 				return head;
 			}
 
