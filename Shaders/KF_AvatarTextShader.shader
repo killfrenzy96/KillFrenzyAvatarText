@@ -26,6 +26,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		_RowLength("Text Output Row Length", Float) = 32
 		_RowColumns("Text Output Row Columns", Float) = 12
 
+		[Space]
 		_Char0("Character 0", Float) = 0
 		_Char1("Character 1", Float) = 0
 		_Char2("Character 2", Float) = 0
@@ -162,6 +163,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		LOD 100
 		// Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
+		AlphaToMask On
 
 		Pass
 		{
@@ -399,13 +401,24 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				if (charCurrent < 0) {
 					charCurrent += floor(charCurrent / charLimit) * charLimit;
 				}
+				if (charCurrent == 0)
+					return 0;
 
 				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
 				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 - ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
 				float2 uv = uvPosition + uvOffset;
 
-				fixed4 col = tex2D(_MainTex, uv);
-				clip(col.a - 0.1);
+				// Get derivatives from the original texture coordinates,
+				// so the texture can be read with mipmaps. 
+				float2 dX = (ddx(i.uv.x));
+				float2 dY = (ddx(i.uv.y));
+
+				fixed4 col = tex2Dgrad(_MainTex, uv, dX, dY);
+				float cutoutValue = 0.5;
+				col.a = (col.a - cutoutValue) / max(fwidth(col.a), 1e-3) + 0.5;
+
+				clip(col.a);
+
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}
