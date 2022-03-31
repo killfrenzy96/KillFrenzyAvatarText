@@ -170,6 +170,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			#pragma fragment frag
 			// make fog work
 			#pragma multi_compile_fog
+			// UNITY_SHADER_NO_UPGRADE
 
 			#include "UnityCG.cginc"
 
