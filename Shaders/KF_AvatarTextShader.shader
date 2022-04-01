@@ -184,8 +184,6 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float _TileY;
 				float _RowLength;
 				float _RowColumns;
-				float _CustomNearClip;
-				float _BackgroundOpacity;
 			}
 
 			CBUFFER_START(CharacterBuffer)
@@ -359,12 +357,6 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-
-				_CustomNearClip = 0.0001;
-				float customNearClip = _CustomNearClip / o.vertex.w;
-				customNearClip = o.vertex.z + -customNearClip;
-				customNearClip = max(0, customNearClip);
-				o.vertex.z = (0 < o.vertex.w) ? customNearClip : o.vertex.z;
 
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				UNITY_TRANSFER_FOG(o,o.vertex);
