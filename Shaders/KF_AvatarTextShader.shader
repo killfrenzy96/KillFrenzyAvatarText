@@ -159,9 +159,16 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+        Tags 
+        {
+            "RenderType" = "Overlay" 
+            "Queue" = "Overlay"
+            "DisableBatching" = "True" 
+            "IgnoreProjector" = "True"
+        }
+
 		LOD 100
-		// Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
 		AlphaToMask On
 
