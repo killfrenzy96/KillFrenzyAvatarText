@@ -21,10 +21,17 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 	{
 		[Enum(Off,0,Front,1,Back,2)] _Culling ("Culling Mode", Int) = 2
 		_MainTex("Texture", 2D) = "white" {}
+		_MainColor("Main Colour", Color) = (1, 1, 1, 1)
+		_ShadowColor("Shadow Colour", Color) = (0, 0, 0, 1)
+		[Space]
 		_TileX("Text Tile Count X", Float) = 16
 		_TileY("Text Tile Count Y", Float) = 6
 		_RowLength("Text Output Row Length", Float) = 32
 		_RowColumns("Text Output Row Columns", Float) = 12
+
+		[Space]
+		[Toggle(_SUNDISK_NONE)]_TextShadow("Parallax Text Shadow", Range(0, 1)) = 0
+		[Gamma]_ShadowDistance("Shadow Distance", Range(0, 0.03)) = 0.001
 
 		[Space]
 		_Char0("Character 0", Float) = 0
@@ -180,17 +187,23 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			// make fog work
 			#pragma multi_compile_fog
 			// UNITY_SHADER_NO_UPGRADE
+			#pragma shader_feature_local _ _SUNDISK_NONE
 
 			cbuffer UnityPerMaterial
 			{
 				#include "UnityCG.cginc"
-				
+
 				sampler2D _MainTex;
 				float4 _MainTex_ST;
+				float4 _MainTex_TexelSize;
+				float4 _MainColor;
+				float4 _ShadowColor;
 				float _TileX;
 				float _TileY;
 				float _RowLength;
 				float _RowColumns;
+				float _TextShadow;
+				float _ShadowDistance;
 			}
 
 			CBUFFER_START(CharacterBuffer)
@@ -329,6 +342,10 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
+				#if defined(_SUNDISK_NONE)
+				float3 normal : NORMAL;
+				float4 tangent : TANGENT;
+				#endif
 			};
 
 			struct v2f
@@ -336,6 +353,9 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float2 uv : TEXCOORD0;
 				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
+				#if defined(_SUNDISK_NONE)
+				float3 tangentViewDir : TANGENT;
+				#endif
 			};
 
 			// This function serves one purpose - to touch every shader property so Unity knows they're used.
@@ -363,18 +383,57 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			v2f vert (appdata v)
 			{
 				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
+
+                float3 centerEye = _WorldSpaceCameraPos;
+                #ifdef USING_STEREO_MATRICES
+                centerEye = .5 * (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]);
+                #endif
+                float3 objPos = unity_ObjectToWorld._14_24_34;
+
+                v.vertex *= 1 + smoothstep(0, 1, distance(centerEye, objPos)-0.5);
+
+				float4 posCS = UnityObjectToClipPos(v.vertex);
+
+				o.vertex = posCS;
+
+				#if defined(_SUNDISK_NONE)
+				// Get tangent-space view direction
+			    float3 binormal = cross( normalize(v.normal), normalize(v.tangent.xyz) ) * v.tangent.w;
+			    float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal );
+				o.tangentViewDir = mul(rotation,  ObjSpaceViewDir(v.vertex));
+				#endif
 
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
 
+		float3 Heatmap(float v) {
+		    float3 r = v * 2.1 - float3(1.8, 1.14, 0.3);
+		    return 1.0 - r * r;
+		}
+
+		// Triangle Wave
+		float T(float z) {
+		    return z >= 0.5 ? 2.-2.*z : 2.*z;
+		}
+
+		// R dither mask
+		float intensity(float2 pixel) {
+		    const float a1 = 0.75487766624669276;
+		    const float a2 = 0.569840290998;
+		    return frac(a1 * float(pixel.x) + a2 * float(pixel.y));
+		}
+
+
 			fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
 			{
 				// Flip text if looking at the backface
 				if (!facing) {
 					i.uv.x = 1.0 - i.uv.x;
+					#if defined(_SUNDISK_NONE)
+					i.tangentViewDir *= -1;
+					#endif
 				}
 
 				// Flip text if looking at the mirror
@@ -382,16 +441,27 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 					i.uv.x = 1.0 - i.uv.x;
 				}
 
-				// Force a branch, so this can be skipped fully.
-				[branch]
-				// This is only to make sure Unity populates the array. If the _CharXX properties
-				// aren't read in the shader, Unity will not send them. 
-				if (i.vertex.w == 65536) i.uv.x = sumCharacters();
+				// Get derivatives from the original texture coordinates,
+				// so the texture can be read with mipmaps. 
+				float2 dX = (ddx(i.uv.x));
+				float2 dY = (ddx(i.uv.y));
+
+				// Setup parallax shadow stuff.
+				#if defined(_SUNDISK_NONE)
+				// Re-normalize the tangent space view direction
+				const float2 parallaxUV = i.tangentViewDir.xy / max(i.tangentViewDir.z, 0.0001);
+				#endif
+
+				float dither = T(intensity(i.vertex + _Time.y));
+				i.uv += dither * _MainTex_TexelSize.xy * dot(dX, dY);
 
 				float2 uvSize = float2(_TileX, _TileY);
 				float2 charSize = float2(_RowLength, _RowColumns);
 				float2 uvTile = 1.0 / uvSize;
 				float2 charTile = 1.0 / charSize;
+
+				float texRatio = _MainTex_TexelSize.x / _MainTex_TexelSize.y;
+				float2 cellTexRatio = float2(texRatio, 1.0);
 
 				float charLimit = uvSize.x * uvSize.y;
 				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
@@ -400,25 +470,62 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				if (charCurrent < 0) {
 					charCurrent += floor(charCurrent / charLimit) * charLimit;
 				}
-				if (charCurrent == 0)
-					return 0;
 
 				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
-				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 - ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
-				float2 uv = uvPosition + uvOffset;
+				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 
+					- ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
 
-				// Get derivatives from the original texture coordinates,
-				// so the texture can be read with mipmaps. 
-				float2 dX = (ddx(i.uv.x));
-				float2 dY = (ddx(i.uv.y));
+				float2 uv = uvPosition + uvOffset;
 
 				fixed4 col = tex2Dgrad(_MainTex, uv, dX, dY);
 				float cutoutValue = 0.5;
 				col.a = (col.a - cutoutValue) / max(fwidth(col.a), 1e-3) + 0.5;
 
+				// Add parallax shadow
+				float2 offsets[] = 
+				{
+					float2(-0.666, 0.666),
+					float2(0, 1),
+					float2(0.666, 0.666),
+					float2(1, 0),
+					float2(-0.666, -0.666),
+					float2(0, -1),
+					float2(0.666, -0.666),
+					float2(-1, 0),
+				};
+
+				#if defined(_SUNDISK_NONE)
+				[unroll]
+				for (int c = 0; c < 8; c+=1)
+				{
+					float2 offsetUV = offsets[c].xy * _ShadowDistance * float2(1, 4);
+					float2 paraPos = parallaxUV * _ShadowDistance;
+					float2 uvPosShadow = (frac((i.uv-paraPos-offsetUV) * charSize) / uvSize);
+
+					fixed4 colShadow = tex2Dgrad(_MainTex, uvPosShadow + uvOffset, dX, dY);
+
+					float2 shadowMask = (frac(i.uv * charSize)-parallaxUV * _ShadowDistance);
+					shadowMask = shadowMask == saturate(shadowMask);
+					colShadow.a *= shadowMask.x * shadowMask.y;
+
+					col.a = max(col.a, colShadow.a);
+				}
+				#endif
+
+				col = smoothstep(0.25, 0.75, col);
+
+				col.rgb = lerp(_ShadowColor, _MainColor, col);
+
 				clip(col.a);
 
 				UNITY_APPLY_FOG(i.fogCoord, col);
+
+				// Force a branch, so this can be skipped fully.
+				[branch]
+				// This is only to make sure Unity populates the array. If the _CharXX properties
+				// aren't read in the shader, Unity will not send them. 
+				if (i.vertex.w == 65536) return sumCharacters();
+
 				return col;
 			}
 
