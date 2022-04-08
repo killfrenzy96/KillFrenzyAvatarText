@@ -19,6 +19,7 @@
 #if UNITY_EDITOR
 
 using UnityEditor;
+using UnityEngine;
 
 using System.Collections.Generic;
 
@@ -71,6 +72,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			targetParameters.parameters = parameters.ToArray();
 			EditorUtility.SetDirty(targetParameters);
+			Debug.Log("Installation to parameters completed.");
 			return true;
 		}
 
@@ -93,6 +95,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			targetParameters.parameters = parameters.ToArray();
 			EditorUtility.SetDirty(targetParameters);
+			Debug.Log("Removal from parameters completed.");
 			return true;
 		}
 	}

@@ -183,6 +183,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			textRenderer.material = textMaterial;
 
 			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+			Debug.Log("Installation of objects to avatar completed.");
 			return true;
 		}
 
@@ -233,6 +234,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+			Debug.Log("Removal of objects from avatar completed.");
 			return true;
 		}
 

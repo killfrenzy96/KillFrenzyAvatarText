@@ -88,6 +88,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			EditorUtility.SetDirty(controller);
+			Debug.Log("Installation to animator completed.");
 			return true;
 		}
 
@@ -129,6 +130,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			EditorUtility.SetDirty(controller);
+			Debug.Log("Removal from animator completed.");
 			return true;
 		}
 
