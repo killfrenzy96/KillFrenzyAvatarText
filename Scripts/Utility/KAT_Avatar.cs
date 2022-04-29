@@ -91,7 +91,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 
 			// No parameters found, create new parameters
 			if (!expressionParameters) {
-				expressionParameters = new ExpressionParameters();
+				// expressionParameters = new ExpressionParameters();
+				expressionParameters = (ExpressionParameters)ScriptableObject.CreateInstance(typeof(ExpressionParameters));
 				avatarDescriptor.expressionParameters = expressionParameters;
 				avatarDescriptor.customExpressions = true;
 				expressionParameters.parameters = new ExpressionParameter[1] {
@@ -117,7 +118,8 @@ namespace KillFrenzy.AvatarTextTools.Utility
 				// 	Debug.Log(expressionsMenu);
 				// }
 
-				expressionsMenu = new ExpressionsMenu();
+				// expressionsMenu = new ExpressionsMenu();
+				expressionsMenu = (ExpressionsMenu)ScriptableObject.CreateInstance(typeof(ExpressionsMenu));
 				avatarDescriptor.expressionsMenu = expressionsMenu;
 				avatarDescriptor.customExpressions = true;
 				expressionsMenu.controls = new List<ExpressionsMenu.Control>();

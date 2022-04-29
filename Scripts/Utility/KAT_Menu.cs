@@ -36,7 +36,10 @@ namespace KillFrenzy.AvatarTextTools.Utility
 	{
 		public static bool InstallToMenu(ExpressionsMenu targetMenu, KatSettings settings)
 		{
-			if (!settings.InstallKeyboard) return false;
+			if (!settings.InstallKeyboard) {
+				Debug.Log("Installation to menu skipped - not required without keyboard.");
+				return true;
+			}
 
 			if (targetMenu.controls.Count >= 8) {
 				Debug.LogError("Error: Avatar controls list is already full. Please add '" + settings.ParamKeyboardPrefix + "' to you avatar manually.");
@@ -51,6 +54,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			targetMenu.controls.Add(control);
 
 			EditorUtility.SetDirty(targetMenu);
+			Debug.Log("Installation to menu completed.");
 			return true;
 		}
 
@@ -65,6 +69,7 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			}
 
 			EditorUtility.SetDirty(targetMenu);
+			Debug.Log("Removal from menu completed.");
 			return true;
 		}
 	}
