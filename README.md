@@ -14,11 +14,6 @@ You will need an app to write avatar text using VRChat OSC.
 My own simple OSC app for KAT. Download it here:\
 https://github.com/killfrenzy96/KatOscApp
 
-**Keyboard App by harunadev**\
-harunadev has created an OSC program for the avatar text system. Check it out and download here:\
-English: https://harunadev.booth.pm/items/3691327 \
-Japanese: https://harunadev.booth.pm/items/3692774
-
 # Prerequisites
 - Unity 2019.4.31f1
 - VRCSDK3. Make sure it is updated to support avatar dynamics.
