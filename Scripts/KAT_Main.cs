@@ -322,11 +322,12 @@ namespace KillFrenzy.AvatarTextTools
 			EditorGUILayout.Space();
 
 			EditorGUILayout.LabelField("Sync Parameters (Lower = Less Parameters, Higher = Faster OSC Sync)");
-			syncParamSize = EditorGUILayout.Popup(syncParamSize, new string[4] {
+			syncParamSize = EditorGUILayout.Popup(syncParamSize, new string[5] {
 				"1 (In-game keyboard speed)",
-				"2 (Typing speed)",
-				"4 (Faster)",
-				"8 (Speech to text speed)"
+				"2 (Average typing speed)",
+				"4 (Default)",
+				"8 (Speech to text speed)",
+				"16 (Fastest)"
 			});
 
 			EditorGUILayout.Space();
