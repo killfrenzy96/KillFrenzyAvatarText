@@ -50,7 +50,7 @@ namespace KillFrenzy.AvatarTextTools
 		private GUIStyle subtitleStyle = null;
 		private GUIStyle dropdownStyle = null;
 
-		[MenuItem("Tools/KillFrenzy Avatar Text (KAT)")]
+		[MenuItem("Tools/KillFrenzy Avatar Text (KAT) v1.2.7")]
 		public static void Open()
 		{
 			GetWindow<KillFrenzyAvatarText>("KAT");
