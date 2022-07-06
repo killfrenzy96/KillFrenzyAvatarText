@@ -1,4 +1,4 @@
-﻿// Avatar Text for VRChat
+// Avatar Text for VRChat
 // Copyright (C) 2022 KillFrenzy / Evan Tran
 
 // This program is free software: you can redistribute it and/or modify
@@ -169,244 +169,246 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
         Tags 
         {
             "RenderType" = "Overlay" 
-            "Queue" = "Overlay"
             "DisableBatching" = "True" 
             "IgnoreProjector" = "True"
+            "PreviewType"="Plane"
+            "Queue" = "AlphaTest+549"
         }
 
 		LOD 100
 		Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
+		ZWrite Off
 		AlphaToMask On
 
-		Pass
+		CGINCLUDE
+		// Common code, for all passes
+		// UNITY_SHADER_NO_UPGRADE
+		#pragma shader_feature_local _ _SUNDISK_NONE
+
+		cbuffer UnityPerMaterial
 		{
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
-			// UNITY_SHADER_NO_UPGRADE
-			#pragma shader_feature_local _ _SUNDISK_NONE
+			#include "UnityCG.cginc"
 
-			cbuffer UnityPerMaterial
-			{
-				#include "UnityCG.cginc"
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
+			float4 _MainTex_TexelSize;
+			float4 _MainColor;
+			float4 _ShadowColor;
+			float _TileX;
+			float _TileY;
+			float _RowLength;
+			float _RowColumns;
+			float _TextShadow;
+			float _ShadowDistance;
+		}
 
-				sampler2D _MainTex;
-				float4 _MainTex_ST;
-				float4 _MainTex_TexelSize;
-				float4 _MainColor;
-				float4 _ShadowColor;
-				float _TileX;
-				float _TileY;
-				float _RowLength;
-				float _RowColumns;
-				float _TextShadow;
-				float _ShadowDistance;
-			}
+		CBUFFER_START(CharacterBuffer)
+			float _Chars[128]  : packoffset(c00);
+			float _Char0  : packoffset(c00);
+			float _Char1  : packoffset(c01);
+			float _Char2  : packoffset(c02);
+			float _Char3  : packoffset(c03);
+			float _Char4  : packoffset(c04);
+			float _Char5  : packoffset(c05);
+			float _Char6  : packoffset(c06);
+			float _Char7  : packoffset(c07);
+			float _Char8  : packoffset(c08);
+			float _Char9  : packoffset(c09);
+			float _Char10  : packoffset(c10);
+			float _Char11  : packoffset(c11);
+			float _Char12  : packoffset(c12);
+			float _Char13  : packoffset(c13);
+			float _Char14  : packoffset(c14);
+			float _Char15  : packoffset(c15);
+			float _Char16  : packoffset(c16);
+			float _Char17  : packoffset(c17);
+			float _Char18  : packoffset(c18);
+			float _Char19  : packoffset(c19);
+			float _Char20  : packoffset(c20);
+			float _Char21  : packoffset(c21);
+			float _Char22  : packoffset(c22);
+			float _Char23  : packoffset(c23);
+			float _Char24  : packoffset(c24);
+			float _Char25  : packoffset(c25);
+			float _Char26  : packoffset(c26);
+			float _Char27  : packoffset(c27);
+			float _Char28  : packoffset(c28);
+			float _Char29  : packoffset(c29);
+			float _Char30  : packoffset(c30);
+			float _Char31  : packoffset(c31);
+			float _Char32  : packoffset(c32);
+			float _Char33  : packoffset(c33);
+			float _Char34  : packoffset(c34);
+			float _Char35  : packoffset(c35);
+			float _Char36  : packoffset(c36);
+			float _Char37  : packoffset(c37);
+			float _Char38  : packoffset(c38);
+			float _Char39  : packoffset(c39);
+			float _Char40  : packoffset(c40);
+			float _Char41  : packoffset(c41);
+			float _Char42  : packoffset(c42);
+			float _Char43  : packoffset(c43);
+			float _Char44  : packoffset(c44);
+			float _Char45  : packoffset(c45);
+			float _Char46  : packoffset(c46);
+			float _Char47  : packoffset(c47);
+			float _Char48  : packoffset(c48);
+			float _Char49  : packoffset(c49);
+			float _Char50  : packoffset(c50);
+			float _Char51  : packoffset(c51);
+			float _Char52  : packoffset(c52);
+			float _Char53  : packoffset(c53);
+			float _Char54  : packoffset(c54);
+			float _Char55  : packoffset(c55);
+			float _Char56  : packoffset(c56);
+			float _Char57  : packoffset(c57);
+			float _Char58  : packoffset(c58);
+			float _Char59  : packoffset(c59);
+			float _Char60  : packoffset(c60);
+			float _Char61  : packoffset(c61);
+			float _Char62  : packoffset(c62);
+			float _Char63  : packoffset(c63);
+			float _Char64  : packoffset(c64);
+			float _Char65  : packoffset(c65);
+			float _Char66  : packoffset(c66);
+			float _Char67  : packoffset(c67);
+			float _Char68  : packoffset(c68);
+			float _Char69  : packoffset(c69);
+			float _Char70  : packoffset(c70);
+			float _Char71  : packoffset(c71);
+			float _Char72  : packoffset(c72);
+			float _Char73  : packoffset(c73);
+			float _Char74  : packoffset(c74);
+			float _Char75  : packoffset(c75);
+			float _Char76  : packoffset(c76);
+			float _Char77  : packoffset(c77);
+			float _Char78  : packoffset(c78);
+			float _Char79  : packoffset(c79);
+			float _Char80  : packoffset(c80);
+			float _Char81  : packoffset(c81);
+			float _Char82  : packoffset(c82);
+			float _Char83  : packoffset(c83);
+			float _Char84  : packoffset(c84);
+			float _Char85  : packoffset(c85);
+			float _Char86  : packoffset(c86);
+			float _Char87  : packoffset(c87);
+			float _Char88  : packoffset(c88);
+			float _Char89  : packoffset(c89);
+			float _Char90  : packoffset(c90);
+			float _Char91  : packoffset(c91);
+			float _Char92  : packoffset(c92);
+			float _Char93  : packoffset(c93);
+			float _Char94  : packoffset(c94);
+			float _Char95  : packoffset(c95);
+			float _Char96  : packoffset(c96);
+			float _Char97  : packoffset(c97);
+			float _Char98  : packoffset(c98);
+			float _Char99  : packoffset(c99);
+			float _Char100 : packoffset(c100);
+			float _Char101 : packoffset(c101);
+			float _Char102 : packoffset(c102);
+			float _Char103 : packoffset(c103);
+			float _Char104 : packoffset(c104);
+			float _Char105 : packoffset(c105);
+			float _Char106 : packoffset(c106);
+			float _Char107 : packoffset(c107);
+			float _Char108 : packoffset(c108);
+			float _Char109 : packoffset(c109);
+			float _Char110 : packoffset(c110);
+			float _Char111 : packoffset(c111);
+			float _Char112 : packoffset(c112);
+			float _Char113 : packoffset(c113);
+			float _Char114 : packoffset(c114);
+			float _Char115 : packoffset(c115);
+			float _Char116 : packoffset(c116);
+			float _Char117 : packoffset(c117);
+			float _Char118 : packoffset(c118);
+			float _Char119 : packoffset(c119);
+			float _Char120 : packoffset(c120);
+			float _Char121 : packoffset(c121);
+			float _Char122 : packoffset(c122);
+			float _Char123 : packoffset(c123);
+			float _Char124 : packoffset(c124);
+			float _Char125 : packoffset(c125);
+			float _Char126 : packoffset(c126);
+			float _Char127 : packoffset(c127);
+		CBUFFER_END
 
-			CBUFFER_START(CharacterBuffer)
-				float _Chars[128]  : packoffset(c00);
-				float _Char0  : packoffset(c00);
-				float _Char1  : packoffset(c01);
-				float _Char2  : packoffset(c02);
-				float _Char3  : packoffset(c03);
-				float _Char4  : packoffset(c04);
-				float _Char5  : packoffset(c05);
-				float _Char6  : packoffset(c06);
-				float _Char7  : packoffset(c07);
-				float _Char8  : packoffset(c08);
-				float _Char9  : packoffset(c09);
-				float _Char10  : packoffset(c10);
-				float _Char11  : packoffset(c11);
-				float _Char12  : packoffset(c12);
-				float _Char13  : packoffset(c13);
-				float _Char14  : packoffset(c14);
-				float _Char15  : packoffset(c15);
-				float _Char16  : packoffset(c16);
-				float _Char17  : packoffset(c17);
-				float _Char18  : packoffset(c18);
-				float _Char19  : packoffset(c19);
-				float _Char20  : packoffset(c20);
-				float _Char21  : packoffset(c21);
-				float _Char22  : packoffset(c22);
-				float _Char23  : packoffset(c23);
-				float _Char24  : packoffset(c24);
-				float _Char25  : packoffset(c25);
-				float _Char26  : packoffset(c26);
-				float _Char27  : packoffset(c27);
-				float _Char28  : packoffset(c28);
-				float _Char29  : packoffset(c29);
-				float _Char30  : packoffset(c30);
-				float _Char31  : packoffset(c31);
-				float _Char32  : packoffset(c32);
-				float _Char33  : packoffset(c33);
-				float _Char34  : packoffset(c34);
-				float _Char35  : packoffset(c35);
-				float _Char36  : packoffset(c36);
-				float _Char37  : packoffset(c37);
-				float _Char38  : packoffset(c38);
-				float _Char39  : packoffset(c39);
-				float _Char40  : packoffset(c40);
-				float _Char41  : packoffset(c41);
-				float _Char42  : packoffset(c42);
-				float _Char43  : packoffset(c43);
-				float _Char44  : packoffset(c44);
-				float _Char45  : packoffset(c45);
-				float _Char46  : packoffset(c46);
-				float _Char47  : packoffset(c47);
-				float _Char48  : packoffset(c48);
-				float _Char49  : packoffset(c49);
-				float _Char50  : packoffset(c50);
-				float _Char51  : packoffset(c51);
-				float _Char52  : packoffset(c52);
-				float _Char53  : packoffset(c53);
-				float _Char54  : packoffset(c54);
-				float _Char55  : packoffset(c55);
-				float _Char56  : packoffset(c56);
-				float _Char57  : packoffset(c57);
-				float _Char58  : packoffset(c58);
-				float _Char59  : packoffset(c59);
-				float _Char60  : packoffset(c60);
-				float _Char61  : packoffset(c61);
-				float _Char62  : packoffset(c62);
-				float _Char63  : packoffset(c63);
-				float _Char64  : packoffset(c64);
-				float _Char65  : packoffset(c65);
-				float _Char66  : packoffset(c66);
-				float _Char67  : packoffset(c67);
-				float _Char68  : packoffset(c68);
-				float _Char69  : packoffset(c69);
-				float _Char70  : packoffset(c70);
-				float _Char71  : packoffset(c71);
-				float _Char72  : packoffset(c72);
-				float _Char73  : packoffset(c73);
-				float _Char74  : packoffset(c74);
-				float _Char75  : packoffset(c75);
-				float _Char76  : packoffset(c76);
-				float _Char77  : packoffset(c77);
-				float _Char78  : packoffset(c78);
-				float _Char79  : packoffset(c79);
-				float _Char80  : packoffset(c80);
-				float _Char81  : packoffset(c81);
-				float _Char82  : packoffset(c82);
-				float _Char83  : packoffset(c83);
-				float _Char84  : packoffset(c84);
-				float _Char85  : packoffset(c85);
-				float _Char86  : packoffset(c86);
-				float _Char87  : packoffset(c87);
-				float _Char88  : packoffset(c88);
-				float _Char89  : packoffset(c89);
-				float _Char90  : packoffset(c90);
-				float _Char91  : packoffset(c91);
-				float _Char92  : packoffset(c92);
-				float _Char93  : packoffset(c93);
-				float _Char94  : packoffset(c94);
-				float _Char95  : packoffset(c95);
-				float _Char96  : packoffset(c96);
-				float _Char97  : packoffset(c97);
-				float _Char98  : packoffset(c98);
-				float _Char99  : packoffset(c99);
-				float _Char100 : packoffset(c100);
-				float _Char101 : packoffset(c101);
-				float _Char102 : packoffset(c102);
-				float _Char103 : packoffset(c103);
-				float _Char104 : packoffset(c104);
-				float _Char105 : packoffset(c105);
-				float _Char106 : packoffset(c106);
-				float _Char107 : packoffset(c107);
-				float _Char108 : packoffset(c108);
-				float _Char109 : packoffset(c109);
-				float _Char110 : packoffset(c110);
-				float _Char111 : packoffset(c111);
-				float _Char112 : packoffset(c112);
-				float _Char113 : packoffset(c113);
-				float _Char114 : packoffset(c114);
-				float _Char115 : packoffset(c115);
-				float _Char116 : packoffset(c116);
-				float _Char117 : packoffset(c117);
-				float _Char118 : packoffset(c118);
-				float _Char119 : packoffset(c119);
-				float _Char120 : packoffset(c120);
-				float _Char121 : packoffset(c121);
-				float _Char122 : packoffset(c122);
-				float _Char123 : packoffset(c123);
-				float _Char124 : packoffset(c124);
-				float _Char125 : packoffset(c125);
-				float _Char126 : packoffset(c126);
-				float _Char127 : packoffset(c127);
-			CBUFFER_END
+		struct appdata
+		{
+			float4 vertex : POSITION;
+			float2 uv : TEXCOORD0;
 
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-				#if defined(_SUNDISK_NONE)
-				float3 normal : NORMAL;
-				float4 tangent : TANGENT;
-				#endif
-			};
+			#ifndef UNITY_PASS_SHADOWCASTER
+			#endif
 
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				UNITY_FOG_COORDS(1)
-				float4 vertex : SV_POSITION;
-				#if defined(_SUNDISK_NONE)
-				float3 tangentViewDir : TANGENT;
-				#endif
-			};
+			// Attributes for parallax shadows
+			#if defined(_SUNDISK_NONE) 
+			float3 normal : NORMAL;
+			float4 tangent : TANGENT;
+			#endif
 
-			// This function serves one purpose - to touch every shader property so Unity knows they're used.
-			float sumCharacters()
-			{
-				return 
-				_Char0 + _Char1 + _Char2 + _Char3 + _Char4 + _Char5 + _Char6 + _Char7 + 
-				_Char8 + _Char9 + _Char10 + _Char11 + _Char12 + _Char13 + _Char14 + _Char15 + 
-				_Char16 + _Char17 + _Char18 + _Char19 + _Char20 + _Char21 + _Char22 + _Char23 + 
-				_Char24 + _Char25 + _Char26 + _Char27 + _Char28 + _Char29 + _Char30 + _Char31 + 
-				_Char32 + _Char33 + _Char34 + _Char35 + _Char36 + _Char37 + _Char38 + _Char39 + 
-				_Char40 + _Char41 + _Char42 + _Char43 + _Char44 + _Char45 + _Char46 + _Char47 + 
-				_Char48 + _Char49 + _Char50 + _Char51 + _Char52 + _Char53 + _Char54 + _Char55 + 
-				_Char56 + _Char57 + _Char58 + _Char59 + _Char60 + _Char61 + _Char62 + _Char63 + 
-				_Char64 + _Char65 + _Char66 + _Char67 + _Char68 + _Char69 + _Char70 + _Char71 + 
-				_Char72 + _Char73 + _Char74 + _Char75 + _Char76 + _Char77 + _Char78 + _Char79 + 
-				_Char80 + _Char81 + _Char82 + _Char83 + _Char84 + _Char85 + _Char86 + _Char87 + 
-				_Char88 + _Char89 + _Char90 + _Char91 + _Char92 + _Char93 + _Char94 + _Char95 + 
-				_Char96 + _Char97 + _Char98 + _Char99 + _Char100 + _Char101 + _Char102 + _Char103 + 
-				_Char104 + _Char105 + _Char106 + _Char107 + _Char108 + _Char109 + _Char110 + _Char111 + 
-				_Char112 + _Char113 + _Char114 + _Char115 + _Char116 + _Char117 + _Char118 + _Char119 + 
-				_Char120 + _Char121 + _Char122 + _Char123 + _Char124 + _Char125 + _Char126 + _Char127;
-			}
+    		UNITY_VERTEX_INPUT_INSTANCE_ID
+		};
 
-			v2f vert (appdata v)
-			{
-				v2f o;
+		struct v2f
+		{
+			float2 uv : TEXCOORD0;
+			UNITY_FOG_COORDS(1)
+			#ifndef UNITY_PASS_SHADOWCASTER
+			float4 vertex : SV_POSITION;
+			#else
+			V2F_SHADOW_CASTER;
+			#endif
 
-                float3 centerEye = _WorldSpaceCameraPos;
-                #ifdef USING_STEREO_MATRICES
-                centerEye = .5 * (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]);
-                #endif
-                float3 objPos = unity_ObjectToWorld._14_24_34;
+			#if defined(_SUNDISK_NONE)
+			float3 tangentViewDir : TANGENT;
+			#endif
+    		UNITY_VERTEX_OUTPUT_STEREO
+		};
 
-                v.vertex *= 1 + smoothstep(0, 1, distance(centerEye, objPos)-0.5);
+		// Helper functions
 
-				float4 posCS = UnityObjectToClipPos(v.vertex);
+		// This function serves one purpose - to touch every shader property so Unity knows they're used.
+		float sumCharacters()
+		{
+			return 
+			_Char0 + _Char1 + _Char2 + _Char3 + _Char4 + _Char5 + _Char6 + _Char7 + 
+			_Char8 + _Char9 + _Char10 + _Char11 + _Char12 + _Char13 + _Char14 + _Char15 + 
+			_Char16 + _Char17 + _Char18 + _Char19 + _Char20 + _Char21 + _Char22 + _Char23 + 
+			_Char24 + _Char25 + _Char26 + _Char27 + _Char28 + _Char29 + _Char30 + _Char31 + 
+			_Char32 + _Char33 + _Char34 + _Char35 + _Char36 + _Char37 + _Char38 + _Char39 + 
+			_Char40 + _Char41 + _Char42 + _Char43 + _Char44 + _Char45 + _Char46 + _Char47 + 
+			_Char48 + _Char49 + _Char50 + _Char51 + _Char52 + _Char53 + _Char54 + _Char55 + 
+			_Char56 + _Char57 + _Char58 + _Char59 + _Char60 + _Char61 + _Char62 + _Char63 + 
+			_Char64 + _Char65 + _Char66 + _Char67 + _Char68 + _Char69 + _Char70 + _Char71 + 
+			_Char72 + _Char73 + _Char74 + _Char75 + _Char76 + _Char77 + _Char78 + _Char79 + 
+			_Char80 + _Char81 + _Char82 + _Char83 + _Char84 + _Char85 + _Char86 + _Char87 + 
+			_Char88 + _Char89 + _Char90 + _Char91 + _Char92 + _Char93 + _Char94 + _Char95 + 
+			_Char96 + _Char97 + _Char98 + _Char99 + _Char100 + _Char101 + _Char102 + _Char103 + 
+			_Char104 + _Char105 + _Char106 + _Char107 + _Char108 + _Char109 + _Char110 + _Char111 + 
+			_Char112 + _Char113 + _Char114 + _Char115 + _Char116 + _Char117 + _Char118 + _Char119 + 
+			_Char120 + _Char121 + _Char122 + _Char123 + _Char124 + _Char125 + _Char126 + _Char127;
+		}
 
-				o.vertex = posCS;
+		float2 ParallaxOffset(float height, float2 parallaxUV, float scale, float2 uvs = 0)
+		{
+			return ((height - 1) * parallaxUV * scale) + uvs;
+		}
 
-				#if defined(_SUNDISK_NONE)
-				// Get tangent-space view direction
-			    float3 binormal = cross( normalize(v.normal), normalize(v.tangent.xyz) ) * v.tangent.w;
-			    float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal );
-				o.tangentViewDir = mul(rotation,  ObjSpaceViewDir(v.vertex));
-				#endif
+		float2 getParallaxUVs(float2 parallaxUV, float height, float scale, float4 scaleOffset, float2 uv)
+		{
+			float2 offset = ParallaxOffset(height, parallaxUV, scale);
+			float2 centre = 0.5-offset;
 
-				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				UNITY_TRANSFER_FOG(o,o.vertex);
-				return o;
-			}
+			uv -= centre;
+			uv *= scaleOffset.xy;
+			uv += centre;
+			uv += scaleOffset.zw;
+			uv += offset;
+			return uv;
+		}
 
 		float3 Heatmap(float v) {
 		    float3 r = v * 2.1 - float3(1.8, 1.14, 0.3);
@@ -425,110 +427,200 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		    return frac(a1 * float(pixel.x) + a2 * float(pixel.y));
 		}
 
+		float computeMaskedAlpha(float a, float t) {
+		    // Use derivatives to smooth alpha tested edges
+		    return (a - t) / max(fwidth(a), 1e-3) + 0.5;
+		}
 
-			fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
-			{
-				// Flip text if looking at the backface
-				if (!facing) {
-					i.uv.x = 1.0 - i.uv.x;
-					#if defined(_SUNDISK_NONE)
-					i.tangentViewDir *= -1;
-					#endif
-				}
+		// Main code
 
-				// Flip text if looking at the mirror
-				if (unity_CameraProjection[2][0] != 0.0 || unity_CameraProjection[2][1] != 0.0) {
-					i.uv.x = 1.0 - i.uv.x;
-				}
+		v2f vert (appdata v)
+		{
+			v2f o;
+			UNITY_INITIALIZE_OUTPUT(v2f, o);
+			UNITY_SETUP_INSTANCE_ID(v);
 
-				// Get derivatives from the original texture coordinates,
-				// so the texture can be read with mipmaps. 
-				float2 dX = (ddx(i.uv.x));
-				float2 dY = (ddx(i.uv.y));
+			float3 posVS = v.vertex.xyz;
+            float3 centerEye = _WorldSpaceCameraPos;
+            #ifdef USING_STEREO_MATRICES
+            centerEye = .5 * (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]);
+            #endif
+            float3 objPos = unity_ObjectToWorld._14_24_34;
+            v.vertex *= 1 + smoothstep(0, 1, distance(centerEye, objPos)-0.5);
 
-				// Setup parallax shadow stuff.
+
+			#ifdef UNITY_PASS_SHADOWCASTER
+			TRANSFER_SHADOW_CASTER(o);
+			#else
+			float4 posCS = UnityObjectToClipPos(v.vertex);
+			o.vertex = posCS;
+			#endif
+
+			#if defined(_SUNDISK_NONE)
+			// Get tangent-space view direction
+		    float3 binormal = cross( normalize(v.normal), normalize(v.tangent.xyz) ) * v.tangent.w;
+		    float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal );
+			o.tangentViewDir = mul(rotation,  ObjSpaceViewDir(v.vertex));
+            #endif
+
+			o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+			UNITY_TRANSFER_FOG(o,o.vertex);
+			UNITY_TRANSFER_INSTANCE_ID(v, o);
+			return o;
+		}
+
+
+
+		fixed4 frag (v2f i, uint facing: SV_IsFrontFace) : SV_Target
+		{
+
+			#ifdef UNITY_PASS_SHADOWCASTER
+			float4 posCS = i.pos;
+			#else
+			float4 posCS = i.vertex;
+			#endif
+
+			// Flip text if looking at the backface
+			if (!facing) {
+				i.uv.x = 1.0 - i.uv.x;
 				#if defined(_SUNDISK_NONE)
-				// Re-normalize the tangent space view direction
-				const float2 parallaxUV = i.tangentViewDir.xy / max(i.tangentViewDir.z, 0.0001);
+				i.tangentViewDir *= -1;
 				#endif
-
-				float dither = T(intensity(i.vertex + _Time.y));
-				i.uv += dither * _MainTex_TexelSize.xy * dot(dX, dY);
-
-				float2 uvSize = float2(_TileX, _TileY);
-				float2 charSize = float2(_RowLength, _RowColumns);
-				float2 uvTile = 1.0 / uvSize;
-				float2 charTile = 1.0 / charSize;
-
-				float texRatio = _MainTex_TexelSize.x / _MainTex_TexelSize.y;
-				float2 cellTexRatio = float2(texRatio, 1.0);
-
-				float charLimit = uvSize.x * uvSize.y;
-				float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
-				float charCurrent = round(_Chars[clamp(charPosition, 0, 127)]);
-				charCurrent = min(charCurrent, charLimit);
-				if (charCurrent < 0) {
-					charCurrent += floor(charCurrent / charLimit) * charLimit;
-				}
-
-				float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
-				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 
-					- ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
-
-				float2 uv = uvPosition + uvOffset;
-
-				fixed4 col = tex2Dgrad(_MainTex, uv, dX, dY);
-				float cutoutValue = 0.5;
-				col.a = (col.a - cutoutValue) / max(fwidth(col.a), 1e-3) + 0.5;
-
-				// Add parallax shadow
-				float2 offsets[] = 
-				{
-					float2(-0.666, 0.666),
-					float2(0, 1),
-					float2(0.666, 0.666),
-					float2(1, 0),
-					float2(-0.666, -0.666),
-					float2(0, -1),
-					float2(0.666, -0.666),
-					float2(-1, 0),
-				};
-
-				#if defined(_SUNDISK_NONE)
-				[unroll]
-				for (int c = 0; c < 8; c+=1)
-				{
-					float2 offsetUV = offsets[c].xy * _ShadowDistance * float2(1, 4);
-					float2 paraPos = parallaxUV * _ShadowDistance;
-					float2 uvPosShadow = (frac((i.uv-paraPos-offsetUV) * charSize) / uvSize);
-
-					fixed4 colShadow = tex2Dgrad(_MainTex, uvPosShadow + uvOffset, dX, dY);
-
-					float2 shadowMask = (frac(i.uv * charSize)-parallaxUV * _ShadowDistance);
-					shadowMask = shadowMask == saturate(shadowMask);
-					colShadow.a *= shadowMask.x * shadowMask.y;
-
-					col.a = max(col.a, colShadow.a);
-				}
-				#endif
-
-				col = smoothstep(0.25, 0.75, col);
-
-				col.rgb = lerp(_ShadowColor, _MainColor, col);
-
-				clip(col.a);
-
-				UNITY_APPLY_FOG(i.fogCoord, col);
-
-				// Force a branch, so this can be skipped fully.
-				[branch]
-				// This is only to make sure Unity populates the array. If the _CharXX properties
-				// aren't read in the shader, Unity will not send them. 
-				if (i.vertex.w == 65536) return sumCharacters();
-
-				return col;
 			}
 
+			// Flip text if looking at the mirror
+			if (unity_CameraProjection[2][0] != 0.0 || unity_CameraProjection[2][1] != 0.0) {
+				i.uv.x = 1.0 - i.uv.x;
+			}
+
+			// Get derivatives from the original texture coordinates,
+			// so the texture can be read with mipmaps. 
+			float2 dX = (ddx(i.uv.x));
+			float2 dY = (ddx(i.uv.y));
+
+			// Setup parallax shadow stuff.
+			#if defined(_SUNDISK_NONE)
+			// Re-normalize the tangent space view direction
+			const float2 parallaxUV = i.tangentViewDir.xy / max(i.tangentViewDir.z, 0.0001);
+			#endif
+
+			float dither = T(intensity(posCS + _Time.y));
+			i.uv += dither * _MainTex_TexelSize.xy * dot(dX, dY);
+
+			float2 uvSize = float2(_TileX, _TileY);
+			float2 charSize = float2(_RowLength, _RowColumns);
+			float2 uvTile = 1.0 / uvSize;
+			float2 charTile = 1.0 / charSize;
+
+			float texRatio = _MainTex_TexelSize.x / _MainTex_TexelSize.y;
+			float2 cellTexRatio = float2(texRatio, 1.0);
+
+			float charLimit = uvSize.x * uvSize.y;
+			float charPosition = floor(i.uv.x * charSize.x) + floor((1.0 - i.uv.y) * charSize.y) * charSize.x;
+			float charCurrent = round(_Chars[clamp(charPosition, 0, 127)]);
+			charCurrent = min(charCurrent, charLimit);
+			if (charCurrent < 0) {
+				charCurrent += floor(charCurrent / charLimit) * charLimit;
+			}
+
+			float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
+			float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 
+				- ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
+
+			float2 uv = uvPosition + uvOffset;
+
+			fixed4 col = tex2Dgrad(_MainTex, uv, dX, dY);
+			float cutoutValue = 0.5;
+			col.a = (col.a - cutoutValue) / max(fwidth(col.a), 1e-3) + 0.5;
+
+			// Add parallax shadow
+			float2 offsets[] = 
+			{
+				float2(-0.666, 0.666),
+				float2(0, 1),
+				float2(0.666, 0.666),
+				float2(1, 0),
+				float2(-0.666, -0.666),
+				float2(0, -1),
+				float2(0.666, -0.666),
+				float2(-1, 0),
+			};
+
+			#if defined(_SUNDISK_NONE)
+			[unroll]
+			for (int c = 0; c < 8; c+=1)
+			{
+				// parallaxUV
+				float2 offsetUV = offsets[c].xy * _ShadowDistance * float2(1, 4);
+				float2 paraPos = parallaxUV * _ShadowDistance;
+				float2 uvPosShadow = (frac((i.uv-paraPos-offsetUV) * charSize) / uvSize);
+
+				fixed4 colShadow = tex2Dgrad(_MainTex, uvPosShadow + uvOffset, dX, dY);
+
+				float2 shadowMask = (frac(i.uv * charSize)-parallaxUV * _ShadowDistance);
+				shadowMask = shadowMask == saturate(shadowMask);
+				colShadow.a *= shadowMask.x * shadowMask.y;
+
+				col.a = max(col.a, colShadow.a);
+				//col.a = max(col.a, 1.0);
+			}
+			#endif
+
+			col = smoothstep(0.25, 0.75, col);
+
+			col.rgb = lerp(_ShadowColor, _MainColor, col);
+
+		    if (col.a <= 0.0) {
+		        discard;
+		    }
+
+			UNITY_APPLY_FOG(i.fogCoord, col);
+
+			// Force a branch, so this can be skipped fully.
+			[branch]
+			// This is only to make sure Unity populates the array. If the _CharXX properties
+			// aren't read in the shader, Unity will not send them. 
+			if ((col.a+posCS.w) == 65536) return sumCharacters();
+
+			#if defined(UNITY_PASS_SHADOWCASTER)
+            SHADOW_CASTER_FRAGMENT(i)
+            #endif
+
+			return col;
+		}
+
+		ENDCG
+
+		Pass
+		{
+			Name "FORWARD"
+			Tags { "LightMode" = "Always" "Queue" = "Overlay" }
+			ZWrite On
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			// make fog work
+			#pragma multi_compile_fog
+            #pragma multi_compile_instancing
+			ENDCG
+		}
+
+		Pass
+		{
+			Name "ShadowCaster"
+			Tags { "RenderType" = "TreeLeaf" "LightMode" = "ShadowCaster" }
+			ZWrite On
+			ZTest LEqual
+			AlphaToMask Off
+			CGPROGRAM
+			#pragma multi_compile_shadowcaster
+
+			#ifndef UNITY_PASS_SHADOWCASTER
+			#define UNITY_PASS_SHADOWCASTER
+			#endif
+
+			#pragma vertex vert
+			#pragma fragment frag
 			ENDCG
 		}
 	}
