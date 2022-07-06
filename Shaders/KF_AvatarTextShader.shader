@@ -1,4 +1,4 @@
-// Avatar Text for VRChat
+﻿// Avatar Text for VRChat
 // Copyright (C) 2022 KillFrenzy / Evan Tran
 
 // This program is free software: you can redistribute it and/or modify
@@ -523,6 +523,9 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				charCurrent += floor(charCurrent / charLimit) * charLimit;
 			}
 
+			if (ceil(i.uv.x) != 1) discard;
+			if (ceil(i.uv.y) != 1) discard;
+
 			float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
 			float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 
 				- ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
@@ -550,19 +553,34 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			[unroll]
 			for (int c = 0; c < 8; c+=1)
 			{
-				// parallaxUV
+				float2 origUV = i.uv;
 				float2 offsetUV = offsets[c].xy * _ShadowDistance * float2(1, 4);
 				float2 paraPos = parallaxUV * _ShadowDistance;
-				float2 uvPosShadow = (frac((i.uv-paraPos-offsetUV) * charSize) / uvSize);
+				origUV -= offsetUV;
+				origUV -= paraPos;
+				float charPosition = floor(origUV.x * charSize.x) 
+					+ floor((1.0 - origUV.y) * charSize.y) * charSize.x;
+				float charCurrent = round(_Chars[clamp(charPosition, 0, 127)]);
+				charCurrent = min(charCurrent, charLimit);
+				if (charCurrent < 0) {
+					charCurrent += floor(charCurrent / charLimit) * charLimit;
+				}
 
-				fixed4 colShadow = tex2Dgrad(_MainTex, uvPosShadow + uvOffset, dX, dY);
+				if (ceil(origUV.x) != 1) continue;
+				if (ceil(origUV.y) != 1) continue;
+
+				float2 uvPosition = (fmod(origUV * charSize, 1.0) / uvSize);
+				float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0 
+					- ((floor(charCurrent / uvSize.x) + 1.0) * uvTile.y));
+
+				float2 uv = uvPosition + uvOffset;
+				fixed4 colShadow = tex2Dgrad(_MainTex, uv, dX, dY);
 
 				float2 shadowMask = (frac(i.uv * charSize)-parallaxUV * _ShadowDistance);
 				shadowMask = shadowMask == saturate(shadowMask);
 				colShadow.a *= shadowMask.x * shadowMask.y;
 
 				col.a = max(col.a, colShadow.a);
-				//col.a = max(col.a, 1.0);
 			}
 			#endif
 
