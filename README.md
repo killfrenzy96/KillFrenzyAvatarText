@@ -61,7 +61,7 @@ There are 6 syncronised expression parameters. Here's a short overview of what t
 - KAT_Pointer (Int): Used to indicate which section of text you are editing. The range of this depends on how many sync parameters there are. (Equal to 128 letters / X sync parameters)
 - KAT_CharSyncX (Float): The X letter within the pointer that is being edited. Each (1 / 127) increment represents a different character.
 
-If you require additional information, please join the official VRChat server (https://discord.gg/vrchat) and send me a message directly (KillFrenzy#7777).
+If you require additional information, please join the official VRChat server (https://discord.gg/vrchat) or Alpha Blend Interactive server (https://discord.gg/abi) and send me a message directly (KillFrenzy#7777).
 
 # Why have I made this?
 This will directly replace my old VRC Avatar Keyboard system. It replaces the particle text on the old keyboard with a shader setup. This greatly improves performance and even makes it possible to place this on an excellent performance ranked avatar.
