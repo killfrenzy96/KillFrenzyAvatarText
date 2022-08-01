@@ -14,7 +14,7 @@ You will need an app to write avatar text using VRChat OSC.
 My own simple OSC app for KAT.\
 https://github.com/killfrenzy96/KatOscApp
 
-**TTS-Voice-Wizard**\
+**TTS Voice Wizard**\
 An OSC app by VRCWizard that supports speech-to-text-to-speech.\
 https://github.com/VRCWizard/TTS-Voice-Wizard
 
