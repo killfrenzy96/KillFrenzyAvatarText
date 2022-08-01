@@ -23,7 +23,13 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Animations;
 
-using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
+#if VRC_SDK_VRCSDK3
+	using VRCAvatarDescriptor = VRC.SDK3.Avatars.Components.VRCAvatarDescriptor;
+#endif
+
+#if CVR_CCK_EXISTS
+	using CVRAvatar = ABI.CCK.Components.CVRAvatar;
+#endif
 
 using KillFrenzy.AvatarTextTools.Settings;
 
@@ -32,10 +38,37 @@ namespace KillFrenzy.AvatarTextTools.Utility
 {
 	public static class KatObjectsInstaller
 	{
-		public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
+		#if VRC_SDK_VRCSDK3
+			public static bool InstallObjectsToAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
+			{
+				Transform transform = avatarDescriptor.gameObject.transform;
+				return InstallObjectsToAvatar(transform, settings);
+			}
+
+			public static bool RemoveObjectsFromAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
+			{
+				Transform transform = avatarDescriptor.gameObject.transform;
+				return RemoveObjectsFromAvatar(transform, settings);
+			}
+		#endif
+
+		#if CVR_CCK_EXISTS
+			public static bool InstallObjectsToAvatar(CVRAvatar avatarDescriptor, KatSettings settings)
+			{
+				Transform transform = avatarDescriptor.gameObject.transform;
+				return InstallObjectsToAvatar(transform, settings);
+			}
+
+			public static bool RemoveObjectsFromAvatar(CVRAvatar avatarDescriptor, KatSettings settings)
+			{
+				Transform transform = avatarDescriptor.gameObject.transform;
+				return RemoveObjectsFromAvatar(transform, settings);
+			}
+		#endif
+
+		public static bool InstallObjectsToAvatar(Transform avatarRootTransform, KatSettings settings)
 		{
 			Material textMaterial = Resources.Load<Material>("KAT_Misc/KAT_Text");;
-			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform avatarAttachmentTransform = null;
 			Vector3 avatarAttachmentOffset = new Vector3(0.0f, 1.0f, 0.4f);
 
@@ -182,14 +215,14 @@ namespace KillFrenzy.AvatarTextTools.Utility
 			MeshRenderer textRenderer = textObject.GetComponent<MeshRenderer>();
 			textRenderer.material = textMaterial;
 
-			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+			// EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+			EditorSceneManager.MarkSceneDirty(avatarRootTransform.gameObject.scene);
 			Debug.Log("Installation of objects to avatar completed.");
 			return true;
 		}
 
-		public static bool RemoveObjectsFromAvatar(VRCAvatarDescriptor avatarDescriptor, KatSettings settings)
+		public static bool RemoveObjectsFromAvatar(Transform avatarRootTransform, KatSettings settings)
 		{
-			Transform avatarRootTransform = avatarDescriptor.gameObject.transform;
 			Transform katObjectTransform = avatarRootTransform.transform.Find("KillFrenzyAvatarText");
 			if (katObjectTransform) {
 				// Remove constraint target
@@ -228,12 +261,12 @@ namespace KillFrenzy.AvatarTextTools.Utility
 					GameObject.DestroyImmediate(keyboardObjectTransform.gameObject);
 				} catch {
 					Debug.LogWarning("Warning: Unable to destroy the KillFrenzyAvatarKeyboard object.");
-					EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+					EditorSceneManager.MarkSceneDirty(avatarRootTransform.gameObject.scene);
 					return false;
 				}
 			}
 
-			EditorSceneManager.MarkSceneDirty(avatarDescriptor.gameObject.scene);
+			EditorSceneManager.MarkSceneDirty(avatarRootTransform.gameObject.scene);
 			Debug.Log("Removal of objects from avatar completed.");
 			return true;
 		}

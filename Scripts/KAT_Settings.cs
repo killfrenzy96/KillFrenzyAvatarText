@@ -22,6 +22,7 @@ namespace KillFrenzy.AvatarTextTools.Settings
 {
 	public class KatSettings
 	{
+		public readonly int SDK = KatSDK.VRChat;
 		public readonly string ParamTextVisible = "KAT_Visible";
 		public readonly string ParamTextPointer = "KAT_Pointer";
 		public readonly string ParamTextSyncPrefix = "KAT_CharSync";
@@ -59,9 +60,10 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public readonly string KeyboardAttachmentPointName = "KAT_Keyboard_AttachmentPoint";
 		public readonly int AttachmentPoint = KatAttachmentPoint.Chest;
 
-		public KatSettings(bool installKeyboard = true, int attachmentPoint = KatAttachmentPoint.Chest, int syncParamsSize = 4)
+		public KatSettings(int sdk = KatSDK.VRChat, bool installKeyboard = true, int attachmentPoint = KatAttachmentPoint.Chest, int syncParamsSize = 4)
 		{
-			InstallKeyboard = installKeyboard;
+			SDK = sdk;
+			InstallKeyboard = sdk == KatSDK.VRChat ? installKeyboard : false;
 			SyncParamsSize = syncParamsSize;
 			PointerCount = TextLength / SyncParamsSize;
 			AttachmentPoint = attachmentPoint;
@@ -81,6 +83,12 @@ namespace KillFrenzy.AvatarTextTools.Settings
 		public const int None = 0;
 		public const int Head = 1;
 		public const int Chest = 2;
+	}
+
+	public static class KatSDK
+	{
+		public const int VRChat = 0;
+		public const int ChilloutVR = 1;
 	}
 }
 

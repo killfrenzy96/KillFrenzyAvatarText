@@ -21,6 +21,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 	{
 		[Enum(Off,0,Front,1,Back,2)] _Culling ("Culling Mode", Int) = 2
 		_MainTex("Texture", 2D) = "white" {}
+		_Cutoff ("Alpha cutoff", Range(0,1)) = 0.1
 		_TileX("Text Tile Count X", Float) = 16
 		_TileY("Text Tile Count Y", Float) = 6
 		_RowLength("Text Output Row Length", Float) = 32
@@ -158,14 +159,16 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest+100" "IgnoreProjector"="True" }
 		LOD 100
+		AlphaToMask On
 		// Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
 
 		Pass
 		{
 			CGPROGRAM
+			#pragma target 3.0
 			#pragma vertex vert
 			#pragma fragment frag
 			// make fog work
@@ -175,6 +178,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+			fixed _Cutoff;
 
 			float _TileX;
 			float _TileY;
@@ -494,7 +498,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				float2 uv = uvPosition + uvOffset;
 
 				fixed4 col = tex2D(_MainTex, uv);
-				clip(col.a - 0.1);
+				clip(col.a - _Cutoff);
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
 			}

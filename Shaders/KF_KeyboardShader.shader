@@ -23,6 +23,7 @@ Shader "Unlit/KF_KeyboardShader"
 		_MainTex ("Texture Main", 2D) = "white" {}
 		_MainTex2 ("Texture 2", 2D) = "white" {}
 		_TextureBlend ("Texture Blend", Range(0,1)) = 0
+		_Cutoff ("Alpha cutoff", Range(0,1)) = 0.1
 		_Dither ("Dither", Range(0,1)) = 0
 		_HighlightMap ("Highlight Map", 2D) = "white" {}
 		_HighlightSelect ("Highlight Selection", Float) = 0
@@ -30,13 +31,15 @@ Shader "Unlit/KF_KeyboardShader"
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest+100" "IgnoreProjector"="True" }
 		LOD 100
+		AlphaToMask On
 		Cull [_Culling]
 
 		Pass
 		{
 			CGPROGRAM
+			#pragma target 3.0
 			#pragma vertex vert
 			#pragma fragment frag
 			// make fog work
@@ -67,6 +70,7 @@ Shader "Unlit/KF_KeyboardShader"
 			float4 _MainTex2_ST;
 
 			float _TextureBlend;
+			fixed _Cutoff;
 			float _Dither;
 
 			sampler2D _HighlightMap;
@@ -111,7 +115,7 @@ Shader "Unlit/KF_KeyboardShader"
 
 				float2 pos = i.spos.xy / i.spos.w;
 				pos *= _ScreenParams.xy;
-				int index = (int(pos.x) % 4) * 4 + int(pos.y) % 4;
+				uint index = (uint(pos.x) % 4) * 4 + uint(pos.y) % 4;
 				clip((round(col.a) * 1.0 - _Dither) - DITHER_THRESHOLDS[index]);
 
 				// apply fog
