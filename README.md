@@ -11,8 +11,12 @@ An in-game keyboard is now also included using VRChat Avatar Dynamics. You can t
 You will need an app to write avatar text using VRChat OSC.
 
 **KillFrenzy Avatar Text OSC App**\
-My own simple OSC app for KAT. Download it here:\
+My own simple OSC app for KAT.\
 https://github.com/killfrenzy96/KatOscApp
+
+**TTS-Voice-Wizard**\
+An OSC app by VRCWizard that supports speech-to-text-to-speech.\
+https://github.com/VRCWizard/TTS-Voice-Wizard
 
 # Prerequisites
 - Unity 2019.4.31f1
