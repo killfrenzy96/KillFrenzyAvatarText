@@ -118,7 +118,7 @@ Material:
     - _Char28: 82
     - _Char29: 1
     - _Char3: 76
-    - _Char30: -3
+    - _Char30: 0
     - _Char31: 0
     - _Char32: 0
     - _Char33: 0
@@ -210,9 +210,11 @@ Material:
     - _RowColumns: 4
     - _RowLegth: 32
     - _RowLength: 32
+    - _ShadowDistance: 0.001
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TextShadow: 0
     - _TileX: 16
     - _TileY: 16
     - _UVSec: 0
@@ -220,3 +222,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _MainColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
