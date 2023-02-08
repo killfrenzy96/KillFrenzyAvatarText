@@ -23,6 +23,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		_MainTex("Texture", 2D) = "white" {}
 		_MainColor("Main Colour", Color) = (1, 1, 1, 1)
 		_ShadowColor("Shadow Colour", Color) = (0, 0, 0, 1)
+		[Toggle]_ColorsDisabled("Use Texture Colors", Range(0, 1)) = 0
 		[Space]
 		_TileX("Text Tile Count X", Float) = 16
 		_TileY("Text Tile Count Y", Float) = 6
@@ -30,6 +31,7 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		_RowColumns("Text Output Row Columns", Float) = 12
 
 		[Space]
+		[Toggle]_GrowEnabled("Grow Text with Distance", Range(0, 1)) = 1
 		[Toggle(_SUNDISK_NONE)]_TextShadow("Parallax Text Shadow", Range(0, 1)) = 0
 		[Gamma]_ShadowDistance("Shadow Distance", Range(0, 0.03)) = 0.001
 
@@ -200,6 +202,8 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			float _RowLength;
 			float _RowColumns;
 			float _TextShadow;
+			bool _GrowEnabled;
+			bool _ColorsDisabled;
 			float _ShadowDistance;
 		}
 
@@ -441,12 +445,17 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			UNITY_SETUP_INSTANCE_ID(v);
 
 			float3 posVS = v.vertex.xyz;
-			float3 centerEye = _WorldSpaceCameraPos;
-			#ifdef USING_STEREO_MATRICES
-			centerEye = .5 * (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]);
-			#endif
-			float3 objPos = unity_ObjectToWorld._14_24_34;
-			v.vertex *= 1 + smoothstep(0, 1, distance(centerEye, objPos)-0.5);
+			float3 centerEye = 0;
+			if(_GrowEnabled == 1) {
+				centerEye = _WorldSpaceCameraPos;
+
+				#ifdef USING_STEREO_MATRICES
+				centerEye = .5 * (unity_StereoWorldSpaceCameraPos[0] + unity_StereoWorldSpaceCameraPos[1]);
+				#endif
+			
+				float3 objPos = unity_ObjectToWorld._14_24_34;
+				v.vertex *= 1 + smoothstep(0, 1, distance(centerEye, objPos)-0.5);
+			}
 
 
 			#ifdef UNITY_PASS_SHADOWCASTER
@@ -584,15 +593,14 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			}
 			#endif
 
-			col = smoothstep(0.25, 0.75, col);
-
-			col.rgb = lerp(_ShadowColor, _MainColor, col);
-
-			if (col.a <= 0.0) {
-				discard;
+			if(_ColorsDisabled == 0) {
+				col = smoothstep(0.25, 0.75, col);
+				col.rgb = lerp(_ShadowColor, _MainColor, col);
+				if (col.a <= 0.0) {
+					discard;
+				}
+				UNITY_APPLY_FOG(i.fogCoord, col);
 			}
-
-			UNITY_APPLY_FOG(i.fogCoord, col);
 
 			// Force a branch, so this can be skipped fully.
 			[branch]
