@@ -178,7 +178,6 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 		}
 
 		LOD 100
-		Blend SrcAlpha OneMinusSrcAlpha
 		Cull [_Culling]
 		ZWrite Off
 		AlphaToMask On
