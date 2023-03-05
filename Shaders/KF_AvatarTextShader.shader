@@ -493,6 +493,8 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 			float4 posCS = i.vertex;
 			#endif
 
+			fixed discardPixel = 0;
+
 			// Flip text if looking at the backface
 			if (!facing) {
 				i.uv.x = 1.0 - i.uv.x;
@@ -536,8 +538,8 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				charCurrent += floor(charCurrent / charLimit) * charLimit;
 			}
 
-			if (ceil(i.uv.x) != 1) discard;
-			if (ceil(i.uv.y) != 1) discard;
+			if (ceil(i.uv.x) != 1) discardPixel = 1;
+			if (ceil(i.uv.y) != 1) discardPixel = 1;
 
 			float2 uvPosition = (fmod(i.uv * charSize, 1.0) / uvSize);
 			float2 uvOffset = float2(fmod(charCurrent, uvSize.x) * uvTile.x, 1.0
@@ -601,10 +603,12 @@ Shader "Unlit/KF_VRChatAvatarTextShader"
 				col = smoothstep(0.25, 0.75, col);
 				col.rgb = lerp(_ShadowColor, _MainColor, col);
 				if (col.a <= 0.0) {
-					discard;
+					discardPixel = 1;
 				}
 				UNITY_APPLY_FOG(i.fogCoord, col);
 			}
+
+			if (discardPixel > 0.5) discard;
 
 			// Force a branch, so this can be skipped fully.
 			[branch]
